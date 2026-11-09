@@ -1,0 +1,22 @@
+resources:
+  apps:
+    helivara_control_tower:
+      name: helivara-control-tower
+      description: "Helivara Launch & Supply Control Tower: Lakebase risk board, ML equipment risk, Genie, action write-back (synthetic data)"
+      source_code_path: ../app
+      user_api_scopes: [sql, dashboards.genie]
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+        - name: genie-demand
+          genie_space:
+            name: "Demand and Supply Agent"
+            space_id: "01f1bc08a109177a8d192afb82da3e2b"
+            permission: CAN_RUN
+        - name: genie-manufacturing
+          genie_space:
+            name: "Manufacturing and Reliability Agent"
+            space_id: "01f1bc08a1471942bf4433f530ef8537"
+            permission: CAN_RUN

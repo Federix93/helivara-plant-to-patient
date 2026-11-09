@@ -1,0 +1,14 @@
+resources:
+  pipelines:
+    helivara_plant_to_patient:
+      name: helivara_plant_to_patient
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      serverless: true
+      channel: CURRENT
+      root_path: ../src/pipeline
+      libraries:
+        - file:
+            path: ../src/pipeline/plant_to_patient.py
+      configuration:
+        raw_root: /Volumes/${var.catalog}/${var.schema}/raw

@@ -1,0 +1,27 @@
+bundle:
+  name: helivara-plant-to-patient
+
+include:
+  - resources/*.yml
+
+sync:
+  include:
+    - app/frontend/dist/**
+  exclude:
+    - app/frontend/node_modules/**
+
+variables:
+  catalog:
+    default: fr_stable_catalog
+  schema:
+    default: supply_chain
+  warehouse_id:
+    default: 797d1d487d654063
+
+targets:
+  dev:
+    default: true
+    presets:
+      name_prefix: ""
+    workspace:
+      profile: fr-stable

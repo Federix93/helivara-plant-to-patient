@@ -1,0 +1,29 @@
+# Job run 238838553079243 · task score_equipment · state SUCCESS
+# notebook: f636999a-d878-4023-9efe-cf5196f57531
+
+--- cell 3 output ---
+    self._make_module_from_path(filepath)
+      equipment equipment_class        p  rul_days      top_driver
+L_OSD_001_EQ_01          coater 0.937729         2 temp_ratio_7_60
+L_OSD_002_EQ_02    blister_line 0.529518        14 temp_ratio_7_60
+L_OSD_006_EQ_01          coater 0.442658        17 temp_ratio_7_60
+L_API_002_EQ_01      granulator 0.370144        19    cur_slope_14
+L_OSD_004_EQ_03    blister_line 0.253719        22  cur_ratio_7_60
+L_OSD_002_EQ_01          coater 0.233629        23    cur_slope_14
+L_API_001_EQ_02    blister_line 0.233629        23    cur_slope_14
+L_API_002_EQ_02          coater 0.210172        24 temp_ratio_7_60
+L_OSD_006_EQ_03      granulator 0.203305        24 temp_ratio_7_60
+L_OSD_004_EQ_01    blister_line 0.203305        24   temp_slope_14
+L_OSD_005_EQ_02          coater 0.203305        24    vib_slope_14
+L_OSD_003_EQ_02    tablet_press 0.201502        24   temp_slope_14
+L_OSD_001_EQ_02    blister_line 0.197008        24   temp_slope_14
+L_OSD_006_EQ_02          coater 0.195298        24    cur_slope_14
+L_OSD_004_EQ_02      granulator 0.188431        24    cur_slope_14
+L_OSD_003_EQ_01            HVAC 0.188431        24    vib_slope_14
+L_API_002_EQ_03            HVAC 0.188431        24    cur_slope_14
+L_API_001_EQ_01      granulator 0.188431        24 temp_ratio_7_60
+L_OSD_003_EQ_03          coater 0.181631        25    vib_slope_14
+L_OSD_005_EQ_01            HVAC 0.181631        25  vib_ratio_7_60
+
+--- cell 4 output ---
+alerts written: 4 | machines scored: 20

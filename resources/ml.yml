@@ -1,0 +1,27 @@
+resources:
+  jobs:
+    helivara_train:
+      name: helivara_train
+      description: "Train + register the equipment-failure model (champion alias if test AUC >= 0.75)"
+      tasks:
+        - task_key: train
+          notebook_task:
+            notebook_path: ../src/notebooks/01_train_failure_model.py
+          environment_key: ml
+        - task_key: score
+          depends_on: [{task_key: train}]
+          notebook_task:
+            notebook_path: ../src/notebooks/02_score_failure_model.py
+          environment_key: ml
+        - task_key: value_and_brief
+          depends_on: [{task_key: score}]
+          notebook_task:
+            notebook_path: ../src/notebooks/03_value_and_brief.py
+          environment_key: ml
+      environments:
+        - environment_key: ml
+          spec:
+            client: "3"
+            dependencies:
+              - scikit-learn>=1.4
+              - mlflow>=2.16

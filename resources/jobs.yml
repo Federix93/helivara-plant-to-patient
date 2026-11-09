@@ -1,0 +1,47 @@
+resources:
+  jobs:
+    helivara_daily:
+      name: helivara_daily
+      description: "Plant-to-patient daily refresh: Lakeflow ingest -> publish governed gold -> ML scoring -> value + AI brief -> Lakebase serving -> actions back to Delta (synthetic data)"
+      tasks:
+        - task_key: ingest_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.helivara_plant_to_patient.id}
+            full_refresh: false
+        - task_key: publish_gold
+          depends_on: [{task_key: ingest_pipeline}]
+          sql_task:
+            warehouse_id: ${var.warehouse_id}
+            file:
+              path: ../src/sql/publish_gold.sql
+        - task_key: score_equipment
+          depends_on: [{task_key: publish_gold}]
+          notebook_task:
+            notebook_path: ../src/notebooks/02_score_failure_model.py
+          environment_key: ml
+        - task_key: value_and_brief
+          depends_on: [{task_key: score_equipment}]
+          notebook_task:
+            notebook_path: ../src/notebooks/03_value_and_brief.py
+          environment_key: ml
+        - task_key: sync_to_lakebase
+          depends_on: [{task_key: value_and_brief}]
+          spark_python_task:
+            python_file: ../src/jobs/sync_to_lakebase.py
+            parameters: ["--src", "${workspace.file_path}/src"]
+          environment_key: lakebase
+        - task_key: copy_actions_back
+          depends_on: [{task_key: sync_to_lakebase}]
+          spark_python_task:
+            python_file: ../src/jobs/copy_actions_back.py
+            parameters: ["--src", "${workspace.file_path}/src"]
+          environment_key: lakebase
+      environments:
+        - environment_key: ml
+          spec:
+            client: "3"
+            dependencies: ["scikit-learn>=1.4", "mlflow>=2.16"]
+        - environment_key: lakebase
+          spec:
+            client: "3"
+            dependencies: ["pg8000>=1.31", "databricks-sdk>=0.60"]

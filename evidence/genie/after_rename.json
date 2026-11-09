@@ -1,0 +1,34 @@
+{
+ "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+ "question": "Which launches are at risk and what blocks them?",
+ "conversation_id": "01f1dc6a911415f6b5cc8957a6478c59",
+ "status": "COMPLETED",
+ "text": "You want to see a list of product launches and renovations that are at risk due to incomplete readiness. The list includes details like launch ID, SKU, brand, therapeutic area, business unit, phase, planned and actual launch dates, and the overall launch readiness score. It also identifies which specific readiness areas are blocking the launch, such as master data, artwork, or serialization.\n**1 launch is at risk** in the visible data: launch ID **ZYV-001** for SKU **SKU_001** / brand **Zyvanta** in therapeutic area **immunology** and cluster/BU **Immunology**, with launch readiness score **0.3333333333333333**. The blocker for launch ID **ZYV-001** is **master data, artwork**; this is the lowest readiness case in the result set.",
+ "sql": "SELECT\n  `l`.`launch_id`,\n  `l`.`sku`,\n  `p`.`brand`,\n  `p`.`therapeutic_area`,\n  `l`.`cluster_bu`,\n  `l`.`phase`,\n  `l`.`planned_launch_date`,\n  `l`.`actual_launch_date`,\n  `l`.`launch_readiness_score`,\n  CASE\n    WHEN coalesce(`l`.`master_data_ready_flag`, 1) < 1\n         AND coalesce(`l`.`artwork_ready_flag`, 1) < 1\n         AND coalesce(`l`.`serialization_ready_flag`, 1) < 1 THEN 'master data, artwork, serialization'\n    WHEN coalesce(`l`.`master_data_ready_flag`, 1) < 1\n         AND coalesce(`l`.`artwork_ready_flag`, 1) < 1 THEN 'master data, artwork'\n    WHEN coalesce(`l`.`master_data_ready_flag`, 1) < 1\n         AND coalesce(`l`.`serialization_ready_flag`, 1) < 1 THEN 'master data, serialization'\n    WHEN coalesce(`l`.`artwork_ready_flag`, 1) < 1\n         AND coalesce(`l`.`serialization_ready_flag`, 1) < 1 THEN 'artwork, serialization'\n    WHEN coalesce(`l`.`master_data_ready_flag`, 1) < 1 THEN 'master data'\n    WHEN coalesce(`l`.`artwork_ready_flag`, 1) < 1 THEN 'artwork'\n    WHEN coalesce(`l`.`serialization_ready_flag`, 1) < 1 THEN 'serialization'\n    ELSE 'overall readiness low'\n  END AS `blocker`\nFROM `fr_stable_catalog`.`supply_chain`.`dim_launch` `l`\nLEFT JOIN `fr_stable_catalog`.`supply_chain`.`dim_product` `p`\n  ON `l`.`sku` = `p`.`sku`\nWHERE `l`.`phase` IS NOT NULL\n  AND `l`.`launch_readiness_score` IS NOT NULL\n  AND `l`.`phase` IN ('launch', 'renovation')\n  AND (\n    `l`.`launch_readiness_score` < 1\n    OR coalesce(`l`.`master_data_ready_flag`, 1) < 1\n    OR coalesce(`l`.`artwork_ready_flag`, 1) < 1\n    OR coalesce(`l`.`serialization_ready_flag`, 1) < 1\n  )\nORDER BY `l`.`launch_readiness_score` ASC, `l`.`planned_launch_date` ASC, `l`.`launch_id` ASC",
+ "columns": [
+  "launch_id",
+  "sku",
+  "brand",
+  "therapeutic_area",
+  "cluster_bu",
+  "phase",
+  "planned_launch_date",
+  "actual_launch_date",
+  "launch_readiness_score",
+  "blocker"
+ ],
+ "rows": [
+  [
+   "ZYV-001",
+   "SKU_001",
+   "Zyvanta",
+   "immunology",
+   "Immunology",
+   "launch",
+   "2024-06-01T00:00:00.000",
+   "2024-06-01T00:00:00.000",
+   "0.3333333333333333",
+   "master data, artwork"
+  ]
+ ]
+}

@@ -1,0 +1,14 @@
+resources:
+  jobs:
+    helivara_value:
+      name: helivara_value
+      description: "Recompute value estimates and the AI launch brief"
+      tasks:
+        - task_key: value_and_brief
+          notebook_task:
+            notebook_path: ../src/notebooks/03_value_and_brief.py
+          environment_key: ml
+      environments:
+        - environment_key: ml
+          spec:
+            client: "3"

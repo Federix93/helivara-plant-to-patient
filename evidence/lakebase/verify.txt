@@ -1,0 +1,6 @@
+PASS  lakebase control_tower.launch_risk_board rows = gold source (2), no duplicate keys  lakebase=2 distinct=2
+PASS  lakebase control_tower.equipment_risk rows = gold source (20), no duplicate keys  lakebase=20 distinct=20
+PASS  lakebase Zyvanta board row equals gold (readiness, gates, EUR at risk, linked coater)  [0.3333333333333333, 'master data, artwork', 7850126.582278481, 'L_OSD_001_EQ_01']
+PASS  lakebase probe action survives job re-run and is copied to Delta ops_launch_actions  lakebase=[1] delta=1
+
+4/4 checks passed

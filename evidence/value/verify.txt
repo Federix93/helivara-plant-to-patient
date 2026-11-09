@@ -1,0 +1,5 @@
+PASS  value Zyvanta revenue_at_risk_eur > 0  [['ZYV-001', '7850126.582278481']]
+PASS  value brief mentions master data + artwork in EN and IT  
+PASS  value_summary has 4 levers  4
+
+3/3 checks passed

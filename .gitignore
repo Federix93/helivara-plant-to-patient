@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.superpowers/
+legacy/
+raw_out/
+*.parquet
+.DS_Store
+terraform/.terraform/
+node_modules/
+app/frontend/dist/
+.databricks/

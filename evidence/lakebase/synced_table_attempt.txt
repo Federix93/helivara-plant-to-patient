@@ -1,0 +1,13 @@
+# Attempt: managed UC synced table (Delta -> Lakebase) on 2026-11-09T18:45:47Z
+$ databricks postgres create-synced-table fr_stable_catalog.control_tower_synced.launch_board_synced ...
+Error: Schema 'fr_stable_catalog.control_tower_synced' does not exist.
+
+$ databricks postgres create-catalog (register the Lakebase database in UC, prerequisite)
+Error: Principal 'Federico Rizzo' does not have CREATE CATALOG on Metastore 'metastore_aws_eu_central_1'.
+
+Profile:   fr-stable
+Host:      https://fevm-fr-stable.cloud.databricks.com
+Auth type: OAuth (databricks-cli)
+
+Next steps:
+  - Verify you have the required permissions for this operation

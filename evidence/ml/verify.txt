@@ -1,0 +1,6 @@
+PASS  contract fact_predicted_failure (scored)  [['predicted_failure_id', 'STRING'], ['equipment', 'STRING'], ['predicted_failure_date', 'TIMESTAMP_NTZ'], ['rul_days', 'LONG'], ['risk_score', 'DOUBLE'], ['failure_mode', 'STRING']]
+PASS  ml top-1 risk is the Valmora coater L_OSD_001_EQ_01 with p >= 0.6  [['L_OSD_001_EQ_01', '0.9377289377289376']]
+PASS  ml all machines scored with p in [0,1]  ['0.18163105549405353', '0.9377289377289376', '20']
+PASS  ml UC model alias @champion exists  1
+
+4/4 checks passed

@@ -1,0 +1,706 @@
+[
+ {
+  "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+  "question": "Which launches are at risk, and is it master data, serialization, or artwork blocking them?",
+  "conversation_id": "01f1dc734e421030aadef0029e93e70e",
+  "status": "COMPLETED",
+  "text": "You want to see a list of product launches that are at risk due to incomplete readiness in master data, artwork, or serialization. The results include details about each launch such as the product brand, business unit, launch phase, planned and actual launch dates, and the overall launch readiness score. It also identifies which specific readiness areas are blocking the launch. Additionally, it shows the estimated revenue at risk for each launch and any open actions related to the launch, including the count of open actions and the next due date for these actions. The list is ordered by the lowest readiness score first, then by the highest revenue at risk, and finally by the planned launch date.\nUsing **mv_launch_readiness**, there are **2** launches flagged as at risk in the results. **Zyvanta** (**launch**, Immunology) is blocked by **master data and artwork** with a readiness score of **0.33** and estimated revenue at risk of **€7.85M**, while **Oribex** (**phase-out**, Immunology) is blocked by **master data, artwork, and serialization** with a readiness score of **0.90**. Zyvanta is the more severe launch risk in this result set because it has the lower readiness score and the only quantified revenue at risk.\nWould you prefer to see launches considered at risk based on different readiness thresholds or including other risk factors?",
+  "sql": "WITH `open_actions` AS (\n  SELECT\n    `launch_id`,\n    COUNT(*) AS `open_action_count`,\n    MIN(`due_date`) AS `next_due_date`\n  FROM `fr_stable_catalog`.`supply_chain`.`ops_launch_actions`\n  WHERE `launch_id` IS NOT NULL\n    AND `status` IS NOT NULL\n    AND `status` NOT ILIKE '%closed%'\n    AND `status` NOT ILIKE '%completed%'\n    AND `status` NOT ILIKE '%cancelled%'\n  GROUP BY `launch_id`\n)\nSELECT\n  l.`launch_id`,\n  l.`sku`,\n  p.`brand`,\n  l.`cluster_bu`,\n  l.`phase`,\n  l.`planned_launch_date`,\n  l.`actual_launch_date`,\n  l.`launch_readiness_score`,\n  CASE\n    WHEN l.`master_data_ready_flag` < 1 AND l.`artwork_ready_flag` < 1 AND l.`serialization_ready_flag` < 1 THEN 'master data, artwork, serialization'\n    WHEN l.`master_data_ready_flag` < 1 AND l.`artwork_ready_flag` < 1 THEN 'master data, artwork'\n    WHEN l.`master_data_ready_flag` < 1 AND l.`serialization_ready_flag` < 1 THEN 'master data, serialization'\n    WHEN l.`artwork_ready_flag` < 1 AND l.`serialization_ready_flag` < 1 THEN 'artwork, serialization'\n    WHEN l.`master_data_ready_flag` < 1 THEN 'master data'\n    WHEN l.`artwork_ready_flag` < 1 THEN 'artwork'\n    WHEN l.`serialization_ready_flag` < 1 THEN 'serialization'\n    ELSE 'none'\n  END AS `blocking_area`,\n  l.`master_data_ready_flag`,\n  l.`artwork_ready_flag`,\n  l.`serialization_ready_flag`,\n  v.`revenue_at_risk_eur`,\n  oa.`open_action_count`,\n  oa.`next_due_date`\nFROM `fr_stable_catalog`.`supply_chain`.`dim_launch` l\nLEFT JOIN `fr_stable_catalog`.`supply_chain`.`dim_product` p\n  ON l.`sku` = p.`sku`\nLEFT JOIN `fr_stable_catalog`.`supply_chain`.`launch_value` v\n  ON l.`launch_id` = v.`launch_id`\nLEFT JOIN `open_actions` oa\n  ON l.`launch_id` = oa.`launch_id`\nWHERE l.`launch_id` IS NOT NULL\n  AND l.`sku` IS NOT NULL\n  AND l.`phase` IS NOT NULL\n  AND (\n    l.`launch_readiness_score` < 1\n    OR l.`master_data_ready_flag` < 1\n    OR l.`artwork_ready_flag` < 1\n    OR l.`serialization_ready_flag` < 1\n  )\nORDER BY l.`launch_readiness_score` ASC, v.`revenue_at_risk_eur` DESC NULLS LAST, l.`planned_launch_date` ASC",
+  "columns": [
+   "launch_id",
+   "sku",
+   "brand",
+   "cluster_bu",
+   "phase",
+   "planned_launch_date",
+   "actual_launch_date",
+   "launch_readiness_score",
+   "blocking_area",
+   "master_data_ready_flag",
+   "artwork_ready_flag",
+   "serialization_ready_flag",
+   "revenue_at_risk_eur",
+   "open_action_count",
+   "next_due_date"
+  ],
+  "rows": [
+   [
+    "ZYV-001",
+    "SKU_001",
+    "Zyvanta",
+    "Immunology",
+    "launch",
+    "2024-06-01T00:00:00.000",
+    "2024-06-01T00:00:00.000",
+    "0.3333333333333333",
+    "master data, artwork",
+    "0.0",
+    "0.0",
+    "1.0",
+    "7850126.582278481",
+    null,
+    null
+   ],
+   [
+    "ORB-001",
+    "SKU_002",
+    "Oribex",
+    "Immunology",
+    "phase-out",
+    "2022-01-01T00:00:00.000",
+    "2022-01-01T00:00:00.000",
+    "0.9",
+    "master data, artwork, serialization",
+    "0.9",
+    "0.9",
+    "0.9",
+    null,
+    null,
+    null
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+  "question": "How much revenue is at risk on the Zyvanta launch, and which actions are open?",
+  "conversation_id": "01f1dc735e541c0c8ccb51940f5e3769",
+  "status": "COMPLETED",
+  "text": "You want to see the revenue at risk for the Zyvanta brand launches, identify which readiness blockers (master data, artwork, serialization) are present, and list any open actions related to these launches.\nFor **Zyvanta** launch ID **ZYV-001** and SKU **SKU_001**, the revenue at risk is **EUR 7,850,126.58**. The visible blocker(s) are **master data** and **artwork**, and there are **no open actions shown** in the result for action ID, owner, due date, or status.",
+  "sql": "WITH `zyvanta_launches` AS (\n  SELECT\n    lv.`launch_id`,\n    lv.`sku`,\n    lv.`brand`,\n    lv.`revenue_at_risk_eur`,\n    dl.`master_data_ready_flag`,\n    dl.`artwork_ready_flag`,\n    dl.`serialization_ready_flag`\n  FROM `fr_stable_catalog`.`supply_chain`.`launch_value` lv\n  INNER JOIN `fr_stable_catalog`.`supply_chain`.`dim_launch` dl\n    ON lv.`launch_id` = dl.`launch_id`\n  WHERE lv.`brand` IS NOT NULL\n    AND lv.`brand` ILIKE '%Zyvanta%'\n), `open_actions` AS (\n  SELECT\n    oa.`launch_id`,\n    oa.`action_id`,\n    oa.`action_type`,\n    oa.`equipment`,\n    oa.`owner`,\n    oa.`due_date`,\n    oa.`status`,\n    oa.`created_at`\n  FROM `fr_stable_catalog`.`supply_chain`.`ops_launch_actions` oa\n  WHERE oa.`status` IS NOT NULL\n    AND oa.`status` ILIKE '%open%'\n)\nSELECT\n  zl.`launch_id`,\n  zl.`sku`,\n  zl.`brand`,\n  zl.`revenue_at_risk_eur`,\n  concat_ws(', ', filter(array(\n    CASE WHEN coalesce(zl.`master_data_ready_flag`, 0) = 0 THEN 'master data' END,\n    CASE WHEN coalesce(zl.`artwork_ready_flag`, 0) = 0 THEN 'artwork' END,\n    CASE WHEN coalesce(zl.`serialization_ready_flag`, 0) = 0 THEN 'serialization' END\n  ), x -> x IS NOT NULL)) AS `blockers`,\n  oa.`action_id`,\n  oa.`action_type`,\n  oa.`equipment`,\n  oa.`owner`,\n  oa.`due_date`,\n  oa.`status`,\n  oa.`created_at`\nFROM `zyvanta_launches` zl\nLEFT JOIN `open_actions` oa\n  ON zl.`launch_id` = oa.`launch_id`\nORDER BY zl.`revenue_at_risk_eur` DESC, oa.`due_date` ASC, oa.`action_id` ASC",
+  "columns": [
+   "launch_id",
+   "sku",
+   "brand",
+   "revenue_at_risk_eur",
+   "blockers",
+   "action_id",
+   "action_type",
+   "equipment",
+   "owner",
+   "due_date",
+   "status",
+   "created_at"
+  ],
+  "rows": [
+   [
+    "ZYV-001",
+    "SKU_001",
+    "Zyvanta",
+    "7850126.582278481",
+    "master data, artwork",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+  "question": "How is forecast accuracy by therapeutic area, and where is bias worst?",
+  "conversation_id": "01f1dc736a82173f8eb9c688d7578c55",
+  "status": "COMPLETED",
+  "text": "You want to see the forecast accuracy and forecast bias for each therapeutic area, and identify which therapeutic area has the worst forecast bias.\nUsing **mv_demand**, forecast accuracy is highest in **vascular** at **0.8647** and lowest in **immunology** at **0.7932**. Bias is worst in **immunology** at **-0.0170**, slightly more negative than **vascular** at **-0.0166**.\n\nAcross the 4 therapeutic areas shown, **immunology** stands out as both the **least accurate** and the area with the **largest bias**, while **gastroenterology** is closest to neutral bias at **0.0038**.",
+  "sql": "WITH `area_metrics` AS (\n  SELECT\n    `therapeutic_area`,\n    MEASURE(`forecast_accuracy`) AS `forecast_accuracy`,\n    MEASURE(`forecast_bias`) AS `forecast_bias`\n  FROM `fr_stable_catalog`.`supply_chain`.`mv_demand`\n  WHERE `therapeutic_area` IS NOT NULL\n  GROUP BY ALL\n), `ranked_bias` AS (\n  SELECT\n    `therapeutic_area`,\n    `forecast_accuracy`,\n    `forecast_bias`,\n    RANK() OVER (ORDER BY ABS(`forecast_bias`) DESC) AS `bias_rank`\n  FROM `area_metrics`\n)\nSELECT\n  `therapeutic_area`,\n  `forecast_accuracy`,\n  `forecast_bias`,\n  CASE WHEN `bias_rank` = 1 THEN true ELSE false END AS `worst_bias_flag`\nFROM `ranked_bias`\nORDER BY `forecast_accuracy` DESC, `therapeutic_area` ASC",
+  "columns": [
+   "therapeutic_area",
+   "forecast_accuracy",
+   "forecast_bias",
+   "worst_bias_flag"
+  ],
+  "rows": [
+   [
+    "vascular",
+    "0.8647230704566287",
+    "-0.016615266193681033",
+    "false"
+   ],
+   [
+    "gastroenterology",
+    "0.8575820017895948",
+    "0.003760194298862329",
+    "false"
+   ],
+   [
+    "consumer_health",
+    "0.8510044729026514",
+    "-0.006596973799119145",
+    "false"
+   ],
+   [
+    "immunology",
+    "0.7931669922234916",
+    "-0.016957620281985445",
+    "true"
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+  "question": "Which SKUs have the highest expiry-at-risk and low OTIF?",
+  "conversation_id": "01f1dc7374c5107f8f95a74390a12fdd",
+  "status": "COMPLETED",
+  "text": "You want to see the SKUs that have the highest risk of product expiry combined with a lower than average on-time in full (OTIF) customer service level.\nAmong SKUs with **below-average OTIF**, the highest expiry-at-risk is on **SKU_009** at **25,510**, followed by **SKU_005** at **23,265**. The other qualifying SKUs are **SKU_004** and **SKU_008**, both with **0** expiry-at-risk; across these 4 results, expiry-at-risk drops sharply after the top two while OTIF stays in a narrow range of about **90.6% to 91.0%**.",
+  "sql": "WITH `inventory_by_sku` AS (\n  SELECT\n    `sku`,\n    MEASURE(`total_expiry_at_risk`) AS `total_expiry_at_risk`\n  FROM `fr_stable_catalog`.`supply_chain`.`mv_inventory`\n  WHERE `sku` IS NOT NULL\n  GROUP BY ALL\n),\n`service_by_sku` AS (\n  SELECT\n    `sku`,\n    MEASURE(`otif`) AS `otif`\n  FROM `fr_stable_catalog`.`supply_chain`.`mv_service`\n  WHERE `sku` IS NOT NULL\n  GROUP BY ALL\n),\n`overall_otif` AS (\n  SELECT\n    MEASURE(`otif`) AS `overall_otif`\n  FROM `fr_stable_catalog`.`supply_chain`.`mv_service`\n  WHERE `sku` IS NOT NULL\n  GROUP BY ALL\n),\n`joined` AS (\n  SELECT\n    i.`sku`,\n    i.`total_expiry_at_risk`,\n    s.`otif`,\n    RANK() OVER (ORDER BY i.`total_expiry_at_risk` DESC, s.`otif` ASC) AS `risk_rank`\n  FROM `inventory_by_sku` i\n  INNER JOIN `service_by_sku` s\n    ON i.`sku` = s.`sku`\n  CROSS JOIN `overall_otif` o\n  WHERE i.`total_expiry_at_risk` IS NOT NULL\n    AND s.`otif` IS NOT NULL\n    AND s.`otif` < o.`overall_otif`\n)\nSELECT\n  `sku`,\n  `total_expiry_at_risk`,\n  `otif`\nFROM `joined`\nORDER BY `risk_rank` ASC, `sku` ASC",
+  "columns": [
+   "sku",
+   "total_expiry_at_risk",
+   "otif"
+  ],
+  "rows": [
+   [
+    "SKU_009",
+    "25510",
+    "0.9070032087233538"
+   ],
+   [
+    "SKU_005",
+    "23265",
+    "0.9096699736345658"
+   ],
+   [
+    "SKU_004",
+    "0",
+    "0.9056995153324783"
+   ],
+   [
+    "SKU_008",
+    "0",
+    "0.9089017789226218"
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+  "question": "Quali lanci sono a rischio e cosa li blocca?",
+  "conversation_id": "01f1dc737f061e158e7b714583fccfc2",
+  "status": "COMPLETED",
+  "text": "Stai chiedendo quali lanci di prodotto sono a rischio e quali sono i motivi specifici che li bloccano, come la mancanza di prontezza nei dati master, nell'artwork o nella serializzazione.\nNel risultato mostrato, il lancio **ZYV-001** del brand **Zyvanta** è **a rischio**: area terapeutica **immunology**, cluster/BU **Immunology**, fase **launch**, SKU **SKU_001**, punteggio di readiness **0,3333**. Il blocco è **master data, artwork** e il valore a rischio stimato è **EUR 7.850.126,58**; per **ZYV-001** non risultano azioni aperte (**open_action_count = 0**).",
+  "sql": "WITH `open_actions` AS (\n  SELECT\n    `launch_id`,\n    COUNT(*) AS `open_action_count`,\n    CONCAT_WS('; ', COLLECT_LIST(CONCAT(`action_type`, ' | owner: ', COALESCE(`owner`, 'n/a'), ' | due: ', CAST(`due_date` AS STRING), ' | status: ', COALESCE(`status`, 'n/a')))) AS `open_actions`\n  FROM `fr_stable_catalog`.`supply_chain`.`ops_launch_actions`\n  WHERE `launch_id` IS NOT NULL\n    AND `status` IS NOT NULL\n    AND `status` NOT ILIKE '%closed%'\n    AND `status` NOT ILIKE '%done%'\n    AND `status` NOT ILIKE '%completed%'\n  GROUP BY `launch_id`\n)\nSELECT\n  l.`launch_id`,\n  l.`sku`,\n  p.`brand`,\n  p.`therapeutic_area`,\n  l.`cluster_bu`,\n  l.`phase`,\n  l.`planned_launch_date`,\n  l.`actual_launch_date`,\n  l.`launch_readiness_score`,\n  CASE\n    WHEN COALESCE(l.`master_data_ready_flag`, 0) = 0 AND COALESCE(l.`artwork_ready_flag`, 0) = 0 AND COALESCE(l.`serialization_ready_flag`, 0) = 0 THEN 'master data, artwork, serialization'\n    WHEN COALESCE(l.`master_data_ready_flag`, 0) = 0 AND COALESCE(l.`artwork_ready_flag`, 0) = 0 THEN 'master data, artwork'\n    WHEN COALESCE(l.`master_data_ready_flag`, 0) = 0 AND COALESCE(l.`serialization_ready_flag`, 0) = 0 THEN 'master data, serialization'\n    WHEN COALESCE(l.`artwork_ready_flag`, 0) = 0 AND COALESCE(l.`serialization_ready_flag`, 0) = 0 THEN 'artwork, serialization'\n    WHEN COALESCE(l.`master_data_ready_flag`, 0) = 0 THEN 'master data'\n    WHEN COALESCE(l.`artwork_ready_flag`, 0) = 0 THEN 'artwork'\n    WHEN COALESCE(l.`serialization_ready_flag`, 0) = 0 THEN 'serialization'\n    ELSE 'readiness score low'\n  END AS `blocker`,\n  v.`revenue_at_risk_eur`,\n  COALESCE(a.`open_action_count`, 0) AS `open_action_count`,\n  a.`open_actions`\nFROM `fr_stable_catalog`.`supply_chain`.`dim_launch` l\nLEFT JOIN `fr_stable_catalog`.`supply_chain`.`dim_product` p\n  ON l.`sku` = p.`sku`\nLEFT JOIN `fr_stable_catalog`.`supply_chain`.`launch_value` v\n  ON l.`launch_id` = v.`launch_id`\nLEFT JOIN `open_actions` a\n  ON l.`launch_id` = a.`launch_id`\nWHERE l.`launch_id` IS NOT NULL\n  AND l.`sku` IS NOT NULL\n  AND l.`phase` IS NOT NULL\n  AND l.`phase` IN ('launch', 'renovation')\n  AND (\n    l.`launch_readiness_score` < 0.8\n    OR COALESCE(l.`master_data_ready_flag`, 0) = 0\n    OR COALESCE(l.`artwork_ready_flag`, 0) = 0\n    OR COALESCE(l.`serialization_ready_flag`, 0) = 0\n  )\nORDER BY l.`launch_readiness_score` ASC, v.`revenue_at_risk_eur` DESC NULLS LAST",
+  "columns": [
+   "launch_id",
+   "sku",
+   "brand",
+   "therapeutic_area",
+   "cluster_bu",
+   "phase",
+   "planned_launch_date",
+   "actual_launch_date",
+   "launch_readiness_score",
+   "blocker",
+   "revenue_at_risk_eur",
+   "open_action_count",
+   "open_actions"
+  ],
+  "rows": [
+   [
+    "ZYV-001",
+    "SKU_001",
+    "Zyvanta",
+    "immunology",
+    "Immunology",
+    "launch",
+    "2024-06-01T00:00:00.000",
+    "2024-06-01T00:00:00.000",
+    "0.3333333333333333",
+    "master data, artwork",
+    "7850126.582278481",
+    "0",
+    null
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a1471942bf4433f530ef8537",
+  "question": "What is our OEE by plant, with availability, performance and quality?",
+  "conversation_id": "01f1dc738b51155c8c20e08d198db59a",
+  "status": "COMPLETED",
+  "text": "You want to see the Overall Equipment Effectiveness (OEE) for each plant, including its breakdown into availability, performance, and quality components.\nUsing **mv_manufacturing**, OEE is very consistent across the 5 plants, ranging from **65.85%** to **66.13%**, with availability around **97.62%–97.95%**, performance around **84.86%–85.11%**, and quality around **92.95%–93.08%**. Examples include:\n- **Ashbury Ridge** — **OEE 66.10%**, availability **97.69%**, performance **85.11%**, quality **93.08%**\n- **Castelverde** — **OEE 66.13%**, availability **97.95%**, performance **84.95%**, quality **93.01%**\n- **Riberal** — **OEE 66.03%**, availability **97.77%**, performance **84.89%**, quality **93.04%**\n- **Roccalba** — **OEE 65.85%**, availability **97.62%**, performance **84.86%**, quality **93.01%**\n- **Valmora** — **OEE 66.02%**, availability **97.73%**, performance **85.03%**, quality **92.95%**",
+  "sql": "SELECT\n  `plant`,\n  MEASURE(`oee`) AS `oee`,\n  MEASURE(`availability`) AS `availability`,\n  MEASURE(`performance`) AS `performance`,\n  MEASURE(`quality`) AS `quality`\nFROM `fr_stable_catalog`.`supply_chain`.`mv_manufacturing`\nWHERE `plant` IS NOT NULL\nGROUP BY ALL\nORDER BY `plant` ASC",
+  "columns": [
+   "plant",
+   "oee",
+   "availability",
+   "performance",
+   "quality"
+  ],
+  "rows": [
+   [
+    "Ashbury Ridge",
+    "0.6610232418739513",
+    "0.97685958980088",
+    "0.8511093445506972",
+    "0.93083935027295"
+   ],
+   [
+    "Castelverde",
+    "0.6612848466355778",
+    "0.9794858800111703",
+    "0.8495457709649676",
+    "0.9301054889361585"
+   ],
+   [
+    "Riberal",
+    "0.6603331313744972",
+    "0.9777385470985424",
+    "0.8489368806935018",
+    "0.9304054901378267"
+   ],
+   [
+    "Roccalba",
+    "0.6585127363670898",
+    "0.9762493807392226",
+    "0.848643544940196",
+    "0.9300688346468124"
+   ],
+   [
+    "Valmora",
+    "0.6601534622973274",
+    "0.9773221380870049",
+    "0.8502802567083483",
+    "0.9294791330505788"
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a1471942bf4433f530ef8537",
+  "question": "Which critical equipment is predicted to fail in the next 30 days, and which brands are at risk?",
+  "conversation_id": "01f1dc73939612daa42b9f731b890082",
+  "status": "COMPLETED",
+  "text": "You want to see the list of critical equipment predicted to fail within the next 30 days, along with details about the equipment and the brands at risk due to their production lines.\nThe critical equipment predicted to fail within the next 30 days is **equipment L_OSD_001_EQ_01** at **Valmora**, **line L_OSD_001**, with **equipment class coater**, **criticality high**, **failure mode seal_leak**, **risk score 0.9377289377289376**, **remaining useful life 2 days**, and **predicted failure date 2026-09-24**. The brand at risk on **SKU SKU_001** routed to **line L_OSD_001** is **Zyvanta**. With the only returned record tied to a **Valmora coater**, the visible risk is concentrated on **Zyvanta** production on **line L_OSD_001**.",
+  "sql": "WITH `predicted` AS ( SELECT `f`.`equipment`, `f`.`predicted_failure_date`, `f`.`rul_days`, `f`.`risk_score`, `f`.`failure_mode` FROM `fr_stable_catalog`.`supply_chain`.`fact_predicted_failure` AS `f` WHERE `f`.`equipment` IS NOT NULL AND ( (`f`.`rul_days` IS NOT NULL AND `f`.`rul_days` BETWEEN 0 AND 30) OR (`f`.`predicted_failure_date` IS NOT NULL AND `f`.`predicted_failure_date` < dateadd(DAY, 30, current_timestamp())) ) ), `critical_equipment` AS ( SELECT `p`.`equipment`, `p`.`predicted_failure_date`, `p`.`rul_days`, `p`.`risk_score`, `p`.`failure_mode`, `d`.`plant`, `d`.`line`, `d`.`equipment_class`, `d`.`criticality` FROM `predicted` AS `p` INNER JOIN `fr_stable_catalog`.`supply_chain`.`dim_equipment` AS `d` ON `p`.`equipment` = `d`.`equipment` WHERE `d`.`criticality` = 'high' ), `sku_brand` AS ( SELECT `m`.`sku`, `m`.`brand`, MEASURE(`m`.`batch_count`) AS `batch_count` FROM `fr_stable_catalog`.`supply_chain`.`mv_production` AS `m` WHERE `m`.`sku` IS NOT NULL AND `m`.`brand` IS NOT NULL GROUP BY ALL ), `routing_brand` AS ( SELECT DISTINCT `r`.`plant`, `r`.`primary_line`, `r`.`sku`, `s`.`brand` FROM `fr_stable_catalog`.`supply_chain`.`dim_routing` AS `r` LEFT JOIN `sku_brand` AS `s` ON `r`.`sku` = `s`.`sku` WHERE `r`.`plant` IS NOT NULL AND `r`.`primary_line` IS NOT NULL AND `r`.`sku` IS NOT NULL ) SELECT DISTINCT `c`.`equipment`, `c`.`plant`, `c`.`line`, `c`.`equipment_class`, `c`.`criticality`, `c`.`predicted_failure_date`, `c`.`rul_days`, `c`.`risk_score`, `c`.`failure_mode`, `r`.`sku`, `r`.`brand` FROM `critical_equipment` AS `c` LEFT JOIN `routing_brand` AS `r` ON `c`.`plant` = `r`.`plant` AND `c`.`line` = `r`.`primary_line` ORDER BY `c`.`risk_score` DESC, `c`.`predicted_failure_date` ASC, `c`.`equipment` ASC, `r`.`brand` ASC",
+  "columns": [
+   "equipment",
+   "plant",
+   "line",
+   "equipment_class",
+   "criticality",
+   "predicted_failure_date",
+   "rul_days",
+   "risk_score",
+   "failure_mode",
+   "sku",
+   "brand"
+  ],
+  "rows": [
+   [
+    "L_OSD_001_EQ_01",
+    "Valmora",
+    "L_OSD_001",
+    "coater",
+    "high",
+    "2026-09-24T00:00:00.000",
+    "2",
+    "0.9377289377289376",
+    "seal_leak",
+    "SKU_001",
+    "Zyvanta"
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a1471942bf4433f530ef8537",
+  "question": "What are the top root causes of major deviations?",
+  "conversation_id": "01f1dc73a76c110cb5a8e8f32a4ea6f2",
+  "status": "COMPLETED",
+  "text": "You want to see the main root cause categories ranked by the number of major quality deviations they have caused.\nUsing **mv_quality**, the top root causes of major deviations are **human_error** with **40**, **process** with **36**, **equipment** with **35**, and **material** with **29**. Across all **4** categories returned, **human_error** is the leading cause, with a relatively small spread between the top three categories.",
+  "sql": "WITH `ranked_root_causes` AS (\n  SELECT\n    `root_cause_category`,\n    MEASURE(`major_count`) AS `major_deviation_count`,\n    RANK() OVER (ORDER BY MEASURE(`major_count`) DESC) AS `deviation_rank`\n  FROM `fr_stable_catalog`.`supply_chain`.`mv_quality`\n  WHERE `root_cause_category` IS NOT NULL\n  GROUP BY ALL\n)\nSELECT\n  `root_cause_category`,\n  `major_deviation_count`,\n  `deviation_rank`\nFROM `ranked_root_causes`\nORDER BY `deviation_rank` ASC, `root_cause_category` ASC;",
+  "columns": [
+   "root_cause_category",
+   "major_deviation_count",
+   "deviation_rank"
+  ],
+  "rows": [
+   [
+    "human_error",
+    "40",
+    "1"
+   ],
+   [
+    "process",
+    "36",
+    "2"
+   ],
+   [
+    "equipment",
+    "35",
+    "3"
+   ],
+   [
+    "material",
+    "29",
+    "4"
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a1471942bf4433f530ef8537",
+  "question": "What is right-first-time and schedule adherence by plant?",
+  "conversation_id": "01f1dc73b1a414d594609ed13a0854c3",
+  "status": "COMPLETED",
+  "text": "You want to see the right-first-time rate and schedule adherence for each plant.\nUsing **mv_production**, here is right-first-time and schedule adherence by plant:\n- **Ashbury Ridge**: **90.87%** right-first-time, **91.95%** schedule adherence\n- **Castelverde**: **91.88%** right-first-time, **91.88%** schedule adherence\n- **Riberal**: **91.21%** right-first-time, **91.33%** schedule adherence\n- **Roccalba**: **92.81%** right-first-time, **91.80%** schedule adherence\n- **Valmora**: **92.21%** right-first-time, **91.67%** schedule adherence\nAcross these 5 plants, **Roccalba** has the highest right-first-time, while **Ashbury Ridge** has the highest schedule adherence.",
+  "sql": "SELECT\n  `plant`,\n  MEASURE(`rft_rate`) AS `rft_rate`,\n  MEASURE(`schedule_adherence`) AS `schedule_adherence`\nFROM `fr_stable_catalog`.`supply_chain`.`mv_production`\nWHERE `plant` IS NOT NULL\nGROUP BY ALL\nORDER BY `plant` ASC",
+  "columns": [
+   "plant",
+   "rft_rate",
+   "schedule_adherence"
+  ],
+  "rows": [
+   [
+    "Ashbury Ridge",
+    "0.9086892488954345",
+    "0.9194756001833345"
+   ],
+   [
+    "Castelverde",
+    "0.9187817258883249",
+    "0.9187682483516059"
+   ],
+   [
+    "Riberal",
+    "0.9120521172638436",
+    "0.913284595312325"
+   ],
+   [
+    "Roccalba",
+    "0.928125",
+    "0.9179853637338659"
+   ],
+   [
+    "Valmora",
+    "0.9220963172804533",
+    "0.9166801773400987"
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a1471942bf4433f530ef8537",
+  "question": "Which equipment has the highest unplanned downtime and maintenance cost?",
+  "conversation_id": "01f1dc73b80011fdb604aeb5d556d08c",
+  "status": "COMPLETED",
+  "text": "You want to know which equipment has the highest unplanned downtime hours and which equipment has the highest total maintenance cost.\nUsing **mv_reliability**, the equipment with the highest unplanned downtime is **L_API_002_EQ_01** at **50.4 hours**, and the equipment with the highest maintenance cost is **L_OSD_006_EQ_02** at **26,192**. These are **different pieces of equipment**, so the top downtime driver is not the same as the top maintenance cost driver in the visible results.",
+  "sql": "WITH `equipment_metrics` AS (\n  SELECT\n    `equipment`,\n    MEASURE(`unplanned_downtime_hours`) AS `unplanned_downtime_hours`,\n    MEASURE(`total_maintenance_cost`) AS `total_maintenance_cost`\n  FROM `fr_stable_catalog`.`supply_chain`.`mv_reliability`\n  WHERE `equipment` IS NOT NULL\n  GROUP BY ALL\n),\n`downtime_ranked` AS (\n  SELECT\n    `equipment`,\n    `unplanned_downtime_hours`,\n    RANK() OVER (ORDER BY `unplanned_downtime_hours` DESC) AS `downtime_rank`\n  FROM `equipment_metrics`\n),\n`cost_ranked` AS (\n  SELECT\n    `equipment`,\n    `total_maintenance_cost`,\n    RANK() OVER (ORDER BY `total_maintenance_cost` DESC) AS `cost_rank`\n  FROM `equipment_metrics`\n)\nSELECT\n  'highest_unplanned_downtime' AS `metric`,\n  `equipment`,\n  `unplanned_downtime_hours` AS `value`\nFROM `downtime_ranked`\nWHERE `downtime_rank` = 1\nUNION ALL\nSELECT\n  'highest_maintenance_cost' AS `metric`,\n  `equipment`,\n  `total_maintenance_cost` AS `value`\nFROM `cost_ranked`\nWHERE `cost_rank` = 1",
+  "columns": [
+   "metric",
+   "equipment",
+   "value"
+  ],
+  "rows": [
+   [
+    "highest_unplanned_downtime",
+    "L_API_002_EQ_01",
+    "50.400000"
+   ],
+   [
+    "highest_maintenance_cost",
+    "L_OSD_006_EQ_02",
+    "26192.000000"
+   ]
+  ],
+  "kind": "data"
+ },
+ {
+  "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+  "question": "What makes a launch 'ready', and how is the readiness score computed?",
+  "conversation_id": "01f1dc73c23610feb615c4b4e2aa3a22",
+  "status": "COMPLETED",
+  "text": "A launch is considered “ready” based on governed launch data in `fr_stable_catalog`.`supply_chain`: master data readiness, artwork readiness, and serialization readiness, captured in `dim_launch` and summarized in `mv_launch_readiness`. The overall readiness score is the `launch_readiness_score` in `dim_launch`, described as an overall 0–1 index driven by `master_data_ready_flag`, `artwork_ready_flag`, and `serialization_ready_flag`; the schema does not provide an explicit formula or weighting. If you want, I can fetch example launches and show how those component flags relate to the score.",
+  "sql": null,
+  "columns": null,
+  "rows": null,
+  "kind": "knowledge"
+ },
+ {
+  "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+  "question": "Why are Faringel, Digestin and Citralux exempt from serialization?",
+  "conversation_id": "01f1dc73c65c179890a8f7cce1d5f3f6",
+  "status": "COMPLETED",
+  "text": "You want to see details about the products Faringel, Digestin, and Citralux that are exempt from serialization.\nThe data confirms that **Faringel, Digestin, and Citralux are marked as serialization-exempt**, but it does **not show a reason why** they are exempt. All 3 are **mature** Consumer products in **consumer health**, and each has **complete** material master data and **approved** artwork, which suggests the exemption is consistent across these products.",
+  "sql": "SELECT\n  dim_product.sku,\n  dim_product.brand,\n  dim_product.therapeutic_area,\n  dim_product.form,\n  dim_product.pack_size,\n  dim_product.launch_phase,\n  dim_product.cluster_bu,\n  dim_product.serialization_status,\n  dim_product.material_master_status,\n  dim_product.artwork_status\nFROM `fr_stable_catalog`.`supply_chain`.`dim_product`\nWHERE dim_product.serialization_status = 'exempt'\n  AND (\n    dim_product.brand IN ('Faringel', 'Digestin', 'Citralux')\n    OR dim_product.sku IN ('Faringel', 'Digestin', 'Citralux')\n    OR dim_product.brand ILIKE '%Faringel%'\n    OR dim_product.sku ILIKE '%Faringel%'\n    OR dim_product.brand ILIKE '%Digestin%'\n    OR dim_product.sku ILIKE '%Digestin%'\n    OR dim_product.brand ILIKE '%Citralux%'\n    OR dim_product.sku ILIKE '%Citralux%'\n  )\nORDER BY dim_product.brand ASC, dim_product.sku ASC",
+  "columns": [
+   "sku",
+   "brand",
+   "therapeutic_area",
+   "form",
+   "pack_size",
+   "launch_phase",
+   "cluster_bu",
+   "serialization_status",
+   "material_master_status",
+   "artwork_status"
+  ],
+  "rows": [
+   [
+    "SKU_011",
+    "Citralux",
+    "consumer_health",
+    "sachet",
+    "10",
+    "mature",
+    "Consumer",
+    "exempt",
+    "complete",
+    "approved"
+   ],
+   [
+    "SKU_010",
+    "Digestin",
+    "consumer_health",
+    "lozenge",
+    "10",
+    "mature",
+    "Consumer",
+    "exempt",
+    "complete",
+    "approved"
+   ],
+   [
+    "SKU_009",
+    "Faringel",
+    "consumer_health",
+    "tablet",
+    "20",
+    "mature",
+    "Consumer",
+    "exempt",
+    "complete",
+    "approved"
+   ]
+  ],
+  "kind": "knowledge"
+ },
+ {
+  "space_id": "01f1bc08a109177a8d192afb82da3e2b",
+  "question": "Should I worry about Oribex demand going down?",
+  "conversation_id": "01f1dc73d08d1cde9088d1b934d65378",
+  "status": "COMPLETED",
+  "text": "You want to see the demand metrics for the brand Oribex over time, including actual sales, consensus forecast, forecast accuracy, and forecast bias, broken down by month.\nBased on **mv_demand**, there is **no clear sustained decline** in Oribex demand across the 34 months shown: actual sales move up and down, reaching a low of **1,458** in **2024-08**, a high of **2,376** in **2025-03**, and ending at **2,006** in **2026-12**. One useful signal is that demand remains volatile rather than steadily falling, with forecast accuracy usually around **0.80–0.92** but dropping to **0.69** in **2025-06**, which suggests variability more than a consistent downward trend.",
+  "sql": "SELECT\n  `month`,\n  MEASURE(`total_actual_sales`) AS `total_actual_sales`,\n  MEASURE(`total_consensus_forecast`) AS `total_consensus_forecast`,\n  MEASURE(`forecast_accuracy`) AS `forecast_accuracy`,\n  MEASURE(`forecast_bias`) AS `forecast_bias`\nFROM `fr_stable_catalog`.`supply_chain`.`mv_demand`\nWHERE `brand` IS NOT NULL\n  AND `month` IS NOT NULL\n  AND `brand` ILIKE '%Oribex%'\nGROUP BY ALL\nORDER BY `month` ASC",
+  "columns": [
+   "month",
+   "total_actual_sales",
+   "total_consensus_forecast",
+   "forecast_accuracy",
+   "forecast_bias"
+  ],
+  "rows": [
+   [
+    "2024-03",
+    "1847",
+    "1716",
+    "0.8684353004872767",
+    "-0.07092582566323768"
+   ],
+   [
+    "2024-04",
+    "1873",
+    "1817",
+    "0.8366257341163909",
+    "-0.02989855846235985"
+   ],
+   [
+    "2024-05",
+    "1844",
+    "1735",
+    "0.8649674620390455",
+    "-0.05911062906724512"
+   ],
+   [
+    "2024-06",
+    "1599",
+    "1714",
+    "0.8367729831144466",
+    "0.07191994996873045"
+   ],
+   [
+    "2024-07",
+    "1491",
+    "1390",
+    "0.8262910798122065",
+    "-0.06773977196512408"
+   ],
+   [
+    "2024-08",
+    "1458",
+    "1422",
+    "0.9108367626886146",
+    "-0.024691358024691357"
+   ],
+   [
+    "2024-09",
+    "1467",
+    "1357",
+    "0.858214042263122",
+    "-0.07498295841854125"
+   ],
+   [
+    "2024-10",
+    "1619",
+    "1695",
+    "0.8369363804817789",
+    "0.04694255713403336"
+   ],
+   [
+    "2024-11",
+    "1755",
+    "1678",
+    "0.882051282051282",
+    "-0.043874643874643876"
+   ],
+   [
+    "2024-12",
+    "1883",
+    "2049",
+    "0.8682952734997345",
+    "0.08815719596388741"
+   ],
+   [
+    "2025-01",
+    "2107",
+    "2332",
+    "0.8628381585192216",
+    "0.10678690080683437"
+   ],
+   [
+    "2025-02",
+    "2002",
+    "2123",
+    "0.8796203796203796",
+    "0.06043956043956044"
+   ],
+   [
+    "2025-03",
+    "2376",
+    "2199",
+    "0.8792087542087542",
+    "-0.07449494949494949"
+   ],
+   [
+    "2025-04",
+    "2105",
+    "2025",
+    "0.891686460807601",
+    "-0.03800475059382423"
+   ],
+   [
+    "2025-05",
+    "2313",
+    "2415",
+    "0.8746217034154777",
+    "0.04409857328145266"
+   ],
+   [
+    "2025-06",
+    "2069",
+    "2201",
+    "0.6877718704688256",
+    "0.06379893668438859"
+   ],
+   [
+    "2025-07",
+    "1789",
+    "1428",
+    "0.7356064840693124",
+    "-0.20178870877585242"
+   ],
+   [
+    "2025-08",
+    "1985",
+    "1643",
+    "0.8277078085642318",
+    "-0.17229219143576827"
+   ],
+   [
+    "2025-09",
+    "1772",
+    "1666",
+    "0.8295711060948081",
+    "-0.05981941309255079"
+   ],
+   [
+    "2025-10",
+    "1987",
+    "1990",
+    "0.8142929038751887",
+    "0.001509813789632612"
+   ]
+  ],
+  "kind": "knowledge"
+ },
+ {
+  "space_id": "01f1bc08a1471942bf4433f530ef8537",
+  "question": "What's our OEE by plant?",
+  "conversation_id": "01f1dc73d8e6100e8f8f0b31e155e595",
+  "status": "COMPLETED",
+  "text": "You want to see the Overall Equipment Effectiveness (OEE) and its components—availability, performance, and quality—broken down by each plant.\nUsing **mv_manufacturing**, OEE is very consistent across the 5 plants, ranging from **65.85%** to **66.13%**, and all three OEE components are shown below by plant.\n\n- **Ashbury Ridge**: **OEE 66.10%**; Availability **97.69%**; Performance **85.11%**; Quality **93.08%**\n- **Castelverde**: **OEE 66.13%**; Availability **97.95%**; Performance **84.95%**; Quality **93.01%**\n- **Riberal**: **OEE 66.03%**; Availability **97.77%**; Performance **84.89%**; Quality **93.04%**\n- **Roccalba**: **OEE 65.85%**; Availability **97.62%**; Performance **84.86%**; Quality **93.01%**\n- **Valmora**: **OEE 66.02%**; Availability **97.73%**; Performance **85.03%**; Quality **92.95%**\n\nThe spread is narrow, with **Castelverde** highest on OEE and **Roccalba** lowest, suggesting broadly similar manufacturing effectiveness across plants.",
+  "sql": "SELECT\n  `plant`,\n  MEASURE(`oee`) AS `oee`,\n  MEASURE(`availability`) AS `availability`,\n  MEASURE(`performance`) AS `performance`,\n  MEASURE(`quality`) AS `quality`\nFROM `fr_stable_catalog`.`supply_chain`.`mv_manufacturing`\nWHERE `plant` IS NOT NULL\nGROUP BY ALL\nORDER BY `plant` ASC",
+  "columns": [
+   "plant",
+   "oee",
+   "availability",
+   "performance",
+   "quality"
+  ],
+  "rows": [
+   [
+    "Ashbury Ridge",
+    "0.6610232418739513",
+    "0.97685958980088",
+    "0.8511093445506972",
+    "0.93083935027295"
+   ],
+   [
+    "Castelverde",
+    "0.6612848466355778",
+    "0.9794858800111703",
+    "0.8495457709649676",
+    "0.9301054889361585"
+   ],
+   [
+    "Riberal",
+    "0.6603331313744972",
+    "0.9777385470985424",
+    "0.8489368806935018",
+    "0.9304054901378267"
+   ],
+   [
+    "Roccalba",
+    "0.6585127363670898",
+    "0.9762493807392226",
+    "0.848643544940196",
+    "0.9300688346468124"
+   ],
+   [
+    "Valmora",
+    "0.6601534622973274",
+    "0.9773221380870049",
+    "0.8502802567083483",
+    "0.9294791330505788"
+   ]
+  ],
+  "kind": "contrast-1"
+ },
+ {
+  "space_id": "01f1bc08a1471942bf4433f530ef8537",
+  "question": "and what does OEE mean, and why do all three components matter?",
+  "conversation_id": "01f1dc73d8e6100e8f8f0b31e155e595",
+  "status": "COMPLETED",
+  "text": "OEE means Overall Equipment Effectiveness, and in this data it is tracked in `fr_stable_catalog`.`supply_chain`.`mv_manufacturing` as the combination of availability, performance, and quality. Availability reflects uptime, performance reflects running speed versus target, and quality reflects good output versus defects. All three matter because weak performance in any one of them lowers total OEE even if the other two are strong.",
+  "sql": null,
+  "columns": null,
+  "rows": null,
+  "kind": "contrast-2 (follow-up)"
+ }
+]

@@ -1,0 +1,26 @@
+## sap
+dim_date/ FILE      42410 2026-11-09T18:39:19Z dim_date.csv
+dim_dc/ FILE      69 2026-11-09T18:39:19Z dim_dc.csv
+dim_equipment/ FILE      1083 2026-11-09T18:39:19Z dim_equipment.csv
+dim_launch/ FILE      322 2026-11-09T18:39:19Z dim_launch.csv
+dim_line/ FILE      334 2026-11-09T18:39:19Z dim_line.csv
+dim_market/ FILE      73 2026-11-09T18:39:20Z dim_market.csv
+dim_plant/ FILE      179 2026-11-09T18:39:20Z dim_plant.csv
+dim_product/ FILE      1379 2026-11-09T18:39:20Z dim_product.csv
+dim_routing/ FILE      468 2026-11-09T18:39:20Z dim_routing.csv
+dim_supplier/ FILE      145 2026-11-09T18:39:20Z dim_supplier.csv
+fact_demand_forecast/ FILE      80674 2026-11-09T18:39:21Z fact_demand_forecast.csv
+fact_inventory/ FILE      114734 2026-11-09T18:39:21Z fact_inventory.csv
+fact_service/ FILE      87407 2026-11-09T18:39:21Z fact_service.csv
+## mes
+fact_batch/ FILE      669055 2026-11-09T18:39:17Z fact_batch.json
+fact_batch_genealogy/ FILE      549945 2026-11-09T18:39:18Z fact_batch_genealogy.json
+fact_deviation/ FILE      101622 2026-11-09T18:39:18Z fact_deviation.json
+fact_oee/ FILE      2633937 2026-11-09T18:39:18Z fact_oee.json
+fact_qc_release/ FILE      526054 2026-11-09T18:39:18Z fact_qc_release.json
+## iot
+fact_equipment_telemetry/ FILE      1255612 2026-11-09T18:39:17Z fact_equipment_telemetry.json
+## cmms
+fact_maintenance/ FILE      18861 2026-11-09T18:39:16Z fact_maintenance.csv
+## config
+demo_config/ FILE      187 2026-11-09T18:39:16Z demo_config.json

@@ -1,0 +1,3 @@
+control_tower.launch_risk_board: upserted 2, now 2 rows
+control_tower.equipment_risk: upserted 20, now 20 rows
+

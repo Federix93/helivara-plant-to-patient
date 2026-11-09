@@ -1,0 +1,12 @@
+{
+ "fact_demand_forecast": 28,
+ "fact_inventory": 28,
+ "fact_service": 28,
+ "fact_batch": 39,
+ "fact_batch_genealogy": 33,
+ "fact_oee": 198,
+ "fact_qc_release": 39,
+ "fact_deviation": 7,
+ "fact_equipment_telemetry": 116,
+ "fact_maintenance": 2
+}

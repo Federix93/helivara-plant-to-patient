@@ -1,0 +1,55 @@
+PASS  contract demo_config  
+PASS  contract dim_date  
+PASS  contract dim_dc  
+PASS  contract dim_equipment  
+PASS  contract dim_launch  
+PASS  contract dim_line  
+PASS  contract dim_market  
+PASS  contract dim_plant  
+PASS  contract dim_product  
+PASS  contract dim_routing  
+PASS  contract dim_supplier  
+PASS  contract fact_batch  
+PASS  contract fact_batch_genealogy  
+PASS  contract fact_demand_forecast  
+PASS  contract fact_deviation  
+PASS  contract fact_equipment_telemetry  
+PASS  contract fact_inventory  
+PASS  contract fact_maintenance  
+PASS  contract fact_oee  
+PASS  contract fact_qc_release  
+PASS  contract fact_service  
+PASS  hero Zyvanta readiness 0.33 / md 0 / art 0 / ser 1  ['0.33', '0.0', '0.0', '1.0']
+PASS  hero Oribex readiness 0.9  ['0.9', '0.9', '0.9', '0.9']
+PASS  hero Oribex no US demand from 2025-11  0
+PASS  row count demo_config = 1  1
+PASS  row count dim_date = 1037  1037
+PASS  row count dim_dc = 5  5
+PASS  row count dim_equipment = 20  20
+PASS  row count dim_launch = 2  2
+PASS  row count dim_line = 8  8
+PASS  row count dim_market = 5  5
+PASS  row count dim_plant = 5  5
+PASS  row count dim_product = 11  11
+PASS  row count dim_supplier = 5  5
+PASS  row count fact_batch = 2603  2603
+PASS  row count fact_batch_genealogy = 2232  2232
+PASS  row count fact_demand_forecast = 1856  1856
+PASS  row count fact_deviation = 466  466
+PASS  row count fact_equipment_telemetry = 7740  7740
+PASS  row count fact_inventory = 1870  1870
+PASS  row count fact_oee = 13176  13176
+PASS  row count fact_qc_release = 2603  2603
+PASS  row count fact_service = 1856  1856
+PASS  quarantine fact_batch_quarantine = 39  39
+PASS  quarantine fact_batch_genealogy_quarantine = 33  33
+PASS  quarantine fact_demand_forecast_quarantine = 28  28
+PASS  quarantine fact_deviation_quarantine = 7  7
+PASS  quarantine fact_equipment_telemetry_quarantine = 116  116
+PASS  quarantine fact_inventory_quarantine = 28  28
+PASS  quarantine fact_maintenance_quarantine = 2  2
+PASS  quarantine fact_oee_quarantine = 198  198
+PASS  quarantine fact_qc_release_quarantine = 39  39
+PASS  quarantine fact_service_quarantine = 28  28
+
+53/53 checks passed
