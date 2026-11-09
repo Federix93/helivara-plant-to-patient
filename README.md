@@ -106,4 +106,5 @@ uv run python setup/reset_demo.py         # clean actions before presenting
 ```
 
 Architecture detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · evidence index: [`evidence/README.md`](evidence/README.md) ·
-demo script: [`docs/DEMO_SCRIPT_FE_BAR.md`](docs/DEMO_SCRIPT_FE_BAR.md).
+demo script and objection bank: [`docs/DEMO_SCRIPT_FE_BAR.md`](docs/DEMO_SCRIPT_FE_BAR.md) ·
+business deck (PDF): [`docs/deck/Helivara_FE_Bar.pdf`](docs/deck/Helivara_FE_Bar.pdf).
