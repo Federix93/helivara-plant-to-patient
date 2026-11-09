@@ -61,7 +61,11 @@ def upsert_sql(table: str, columns: list[str], pk: str) -> str:
 
 
 def sync_rows(conn, table: str, columns: list[str], pk: str, rows: list[tuple], prune: bool = False) -> int:
-    """Upsert `rows` into `table` in one transaction; with prune=True delete keys absent from `rows`."""
+    """Upsert `rows` into `table` in one transaction; with prune=True delete keys absent from `rows`.
+    An empty source with prune=True is refused: it almost always means an upstream failure, and pruning
+    would silently empty the app's board."""
+    if prune and not rows:
+        raise ValueError(f"refusing to prune {table}: source returned an empty result")
     cur = conn.cursor()
     cur.executemany(upsert_sql(table, columns, pk), rows)
     if prune:

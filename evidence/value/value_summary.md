@@ -1,14 +1,16 @@
 # Value model output (estimates on synthetic data)
 
 Computed by notebook `03_value_and_brief` from gold tables × `value_assumptions` (editable).
+Launch protection is **one-time per protected launch** (patent-protected sales days not lost); the other levers recur every year.
 
-| Lever | Annual value (EUR) | Formula |
-|---|---:|---|
-| Launch protection (Zyvanta) | 7,850,127 | weekly units 4,361 x EUR 450 x 4 weeks earlier |
-| Unplanned downtime avoided | 730,613 | 457 unplanned h/yr x EUR 8,000/h x 20% |
-| Expiry write-off avoided | 106,878 | 35,626 units at risk/yr x EUR 12 x 25% |
-| OTIF improvement | 1,000,000 | 5 pts x EUR 200,000/pt |
-| **Total** | **9,687,618** | |
+| Lever | Type | Value (EUR) | Formula |
+|---|---|---:|---|
+| Launch protection (Zyvanta) | one-time, per protected launch | 7,850,127 | weekly units 4,361 x EUR 450 x 4 weeks earlier |
+| Unplanned downtime avoided | recurring, per year | 730,613 | 457 unplanned h/yr x EUR 8,000/h x 20% |
+| Expiry write-off avoided | recurring, per year | 106,878 | 35,626 units at risk/yr x EUR 12 x 25% |
+| OTIF improvement | recurring, per year | 1,000,000 | 5 pts x EUR 200,000/pt |
+| **Year-one total** | | **9,687,618** | |
+| of which recurring per year | | 1,837,491 | |
 
 ## Assumptions
 

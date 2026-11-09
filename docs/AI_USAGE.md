@@ -32,6 +32,10 @@ The conversation ID is supplied in the submission form.
 | Renaming the snapshot file truncated it before reading | quarantine/row-count check failed to load the file | re-snapshotted from untouched gold before publishing |
 | Real names would have leaked through the rename map and tests | design review of what gets published | fingerprint (SHA-256) scanner; the rename map stays local; public history squashed |
 | Genie `PATCH` is a full replace (a partial body wipes the space) | earlier incident, kept in memory | patch script always sends GET → modify → full body, and asserts the content count after |
+| The train/test split had no embargo (train labels saw June failures), so the AUC was slightly optimistic | final code review (fresh reviewer subagent) | `time_split` with a 30-day embargo, test-first; AUC 0.82 → 0.81 |
+| Isotonic calibration saturated the hero machine at p = 1.00 (overconfident on a slide) | reviewing the scores after the retrain | sigmoid calibration: same AUC, coater 0.90 |
+| The value table added a one-time launch amount into an "annual" total | final code review | `value_type` column: one-time per launch vs recurring; year-one framing everywhere |
+| The serving sync would empty the app's board if a source query returned 0 rows | final code review | refuse to prune on an empty source (test-first) + a non-empty guard before publishing gold |
 | A phase-out product showed three false "blocking" gates (flags 0.9 < 1) | visual review of the app | gate blocks below 0.5; 0.5–0.99 shows as partial |
 
 ## Verified by hand

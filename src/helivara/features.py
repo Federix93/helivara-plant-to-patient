@@ -68,3 +68,13 @@ def make_labels(features: pd.DataFrame, maintenance: pd.DataFrame, horizon_days:
         hi = np.searchsorted(fd, d + np.timedelta64(horizon_days, "D"), side="right")
         y[i] = int(hi > lo)
     return pd.Series(y, index=features.index, name="label")
+
+
+def time_split(dates: pd.Series, test_start: str, test_end: str, horizon_days: int = 30):
+    """Out-of-time split with an embargo: a training row's label window (date, date+horizon] must end
+    before the test window starts, so no failure event is seen by both train and test labels."""
+    d = pd.to_datetime(dates)
+    start = pd.Timestamp(test_start)
+    train = d + pd.Timedelta(days=horizon_days) < start
+    test = (d >= start) & (d <= pd.Timestamp(test_end))
+    return train, test

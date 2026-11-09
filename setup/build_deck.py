@@ -85,6 +85,7 @@ M = lambda v: f"€{v / 1e6:.2f}M" if v >= 1e6 else f"€{v / 1e3:.0f}k"  # noqa
 F = {"readiness": f"{float(L[0]):.0%}", "rar": f"€{rar / 1e6:.1f}M", "coater": f"{coater:.0%}", "auc": f"{metrics['test_auc']:.2f}",
      "total": f"€{total / 1e6:.1f}M", "week": M(weekly * price), "launch": M(vs["Launch protection (Zyvanta)"]),
      "otif": M(vs["OTIF improvement"]), "down": M(vs["Unplanned downtime avoided"]), "exp": M(vs["Expiry write-off avoided"]),
+     "rec": M(total - vs["Launch protection (Zyvanta)"]),
      "q": f"{quarantine}"}
 print("facts:", F)
 
@@ -93,9 +94,9 @@ CONTENT = [
     ("exec", "Executive summary", "What we solved, and what it is worth", [
         f"Problem: Zyvanta, our most important immunology launch, is at {F['readiness']} readiness. Master data and artwork blockers only surface at the monthly S&OP, and the Valmora coater that makes it is wearing out.",
         "Outcome: one governed Control Tower. Risk, then why, then the hidden supply risk, then an owned action, in about 60 seconds, in Italian or English.",
-        f"Value: about {F['total']} a year (estimate): {F['launch']} launch protection, {F['otif']} OTIF, {F['down']} downtime, {F['exp']} expiry.",
+        f"Value: about {F['total']} in year one (estimate): {F['launch']} one-time launch protection plus {F['rec']} recurring every year (OTIF, downtime, expiry).",
         "Ask: a 6-week pilot on the next two launches. Success = every blocker flagged at least 4 weeks before the S&OP review."],
-     f"Lead with the outcome. In one sentence: Zyvanta was at risk and nobody could see it in time. Now we see it, understand it and act in a minute, and that is worth about {F['total']} a year, {F['launch']} of it on this launch alone. Then the ask: a 6-week pilot."),
+     f"Lead with the outcome. In one sentence: Zyvanta was at risk and nobody could see it in time. Now we see it, understand it and act in a minute, and that is worth about {F['total']} in year one, {F['launch']} of it on this launch alone. Then the ask: a 6-week pilot."),
     ("problem", "Why launches slip today", "The Helivara situation as of 22 September 2026", [
         "Launch readiness lives in three places: material master (ERP), artwork approval and serialization. It gets reviewed once a month.",
         f"Zyvanta: master data {float(L[1]):.0%}, artwork {float(L[2]):.0%}, serialization {float(L[3]):.0%}, so readiness {F['readiness']}.",
@@ -122,12 +123,12 @@ CONTENT = [
         "The ask: an executive sponsor, the Global Demand & S&OP Manager as domain owner, two launches, and read access to the source systems."],
      "End with a clear, low-risk ask. Success metrics are the buyer's KPIs. Offer to co-write the success plan this week."),
 ]
-VALUE_ROWS = [["Lever", "Annual value (estimate)", "How it's computed", "KPI owner"],
-              ["Launch protection (Zyvanta)", F["launch"], f"{weekly:,.0f} packs/week × €{price:,.0f} × {weeks:.0f} weeks earlier", "COO / Head of Global Supply Chain"],
-              ["OTIF improvement", F["otif"], "5 OTIF points × €200k per point", "Supply chain / commercial"],
+VALUE_ROWS = [["Lever", "Value, year one (estimate)", "How it's computed", "KPI owner"],
+              ["Launch protection (Zyvanta)", F["launch"], f"{weekly:,.0f} packs/week × €{price:,.0f} × {weeks:.0f} weeks earlier (one-time, per launch)", "COO / Head of Global Supply Chain"],
+              ["OTIF improvement", F["otif"], "5 OTIF points × €200k per point (recurring)", "Supply chain / commercial"],
               ["Unplanned downtime avoided", F["down"], "unplanned hours/yr × €8,000/h × 20%", "Plant & reliability"],
               ["Expiry write-off avoided", F["exp"], "units at risk/yr × €12 × 25%", "Finance"],
-              ["Total", F["total"], "assumptions editable in table value_assumptions", ""]]
+              ["Year-one total", F["total"], f"{F['rec']} recurs yearly; assumptions in table value_assumptions", ""]]
 PERSONA_ROWS = [["Executive sponsor: COO / Head of Global Supply Chain", "Domain owner: Global Demand & S&OP Manager"],
                 [f"Launch revenue protected ({F['launch']} on Zyvanta)\nOTIF +5 pts and fewer tender penalties\nLower write-offs and unplanned downtime\nOne governed platform: lower TCO, faster AI",
                  "Launch gates every day, not once a month\nOne certified definition of readiness and accuracy\nAsk in Italian and see the SQL behind the answer\nEvery escalation owned, dated and auditable"]]
@@ -176,7 +177,7 @@ def add_table(slide, rows, y=1450000, h=2900000, widths=None, font=9):
             reqs.append({"insertText": {"objectId": tid, "cellLocation": {"rowIndex": r, "columnIndex": c}, "text": val}})
             reqs.append({"updateTextStyle": {"objectId": tid, "cellLocation": {"rowIndex": r, "columnIndex": c},
                                              "textRange": {"type": "ALL"}, "fields": "fontSize,bold,foregroundColor,fontFamily",
-                                             "style": {"fontSize": {"magnitude": font, "unit": "PT"}, "bold": r == 0 or (rows[-1][0] == "Total" and r == len(rows) - 1),
+                                             "style": {"fontSize": {"magnitude": font, "unit": "PT"}, "bold": r == 0 or (rows[-1][0] == "Year-one total" and r == len(rows) - 1),
                                                        "foregroundColor": rgb(WHITE if r == 0 else DARK), "fontFamily": "Barlow"}}})
     reqs.append({"updateTableCellProperties": {"objectId": tid, "tableRange": {"location": {"rowIndex": 0, "columnIndex": 0}, "rowSpan": 1, "columnSpan": len(rows[0])},
                                                "tableCellProperties": {"tableCellBackgroundFill": {"solidFill": {"color": {"rgbColor": dict(zip(("red", "green", "blue"), TEAL))}}}},
@@ -208,7 +209,7 @@ def table_slide(key, title, sub, rows, notes, widths=None, font=9):
 created = {}
 for key, title, sub, bullets, notes in CONTENT:
     created[key] = content_slide(key, title, sub, bullets, notes)
-created["value"] = table_slide("value", "Quantified value", f"About {F['total']} a year: estimates computed from the data", VALUE_ROWS,
+created["value"] = table_slide("value", "Quantified value", f"About {F['total']} in year one, {F['rec']} of it recurring: estimates from the data", VALUE_ROWS,
                                f"The number comes from the data, not a spreadsheet: Zyvanta's Q4 consensus forecast, {weekly:,.0f} packs a week at an assumed €{price:,.0f} net, times the 4 weeks we flag the blockers earlier. Every assumption sits in a governed table the business can edit. Invite them to challenge it.",
                                widths=[2000000, 1350000, 3100000, 1700000])
 created["persona"] = table_slide("persona", "Value for sponsor and owner", "Two altitudes, one platform", PERSONA_ROWS,

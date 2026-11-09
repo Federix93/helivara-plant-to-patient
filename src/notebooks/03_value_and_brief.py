@@ -52,19 +52,22 @@ expiry_units = spark.sql(f"""SELECT SUM(expiry_at_risk_qty) FROM {FQ}.fact_inven
   WHERE date > (SELECT demo_date FROM {FQ}.demo_config) - INTERVAL 365 DAYS
     AND date <= (SELECT demo_date FROM {FQ}.demo_config)""").first()[0]
 rows = [
-    ("Launch protection (Zyvanta)", float(fc.revenue_at_risk_eur.sum()),
+    ("Launch protection (Zyvanta)", "one-time, per protected launch", float(fc.revenue_at_risk_eur.sum()),
      f"weekly units {fc.weekly_units.sum():,.0f} x EUR {A['zyvanta_net_price_eur']:,.0f} x {A['weeks_delay_avoided']:.0f} weeks earlier"),
-    ("Unplanned downtime avoided", downtime_value(float(hours), A["downtime_cost_per_hour_eur"], A["downtime_reduction"]),
+    ("Unplanned downtime avoided", "recurring, per year", downtime_value(float(hours), A["downtime_cost_per_hour_eur"], A["downtime_reduction"]),
      f"{float(hours):,.0f} unplanned h/yr x EUR {A['downtime_cost_per_hour_eur']:,.0f}/h x {A['downtime_reduction']:.0%}"),
-    ("Expiry write-off avoided", expiry_value(float(expiry_units), A["unit_cost_eur"], A["expiry_reduction"]),
+    ("Expiry write-off avoided", "recurring, per year", expiry_value(float(expiry_units), A["unit_cost_eur"], A["expiry_reduction"]),
      f"{float(expiry_units):,.0f} units at risk/yr x EUR {A['unit_cost_eur']:,.0f} x {A['expiry_reduction']:.0%}"),
-    ("OTIF improvement", otif_value(A["otif_points"], A["otif_value_per_point_eur"]),
+    ("OTIF improvement", "recurring, per year", otif_value(A["otif_points"], A["otif_value_per_point_eur"]),
      f"{A['otif_points']:.0f} pts x EUR {A['otif_value_per_point_eur']:,.0f}/pt"),
 ]
-vs = pd.DataFrame(rows, columns=["lever", "annual_value_eur", "formula"])
+vs = pd.DataFrame(rows, columns=["lever", "value_type", "annual_value_eur", "formula"])
 spark.createDataFrame(vs).write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{FQ}.value_summary")
-spark.sql(f"COMMENT ON TABLE {FQ}.value_summary IS 'Annual value per lever (EUR, ESTIMATES) with the formula used.'")
-print(vs.to_string(index=False)); print(f"TOTAL EUR {vs.annual_value_eur.sum():,.0f}")
+spark.sql(f"COMMENT ON TABLE {FQ}.value_summary IS 'Value per lever (EUR, ESTIMATES) with the formula used. value_type: "
+          f"launch protection is one-time per protected launch (patent-protected sales days not lost); other levers recur yearly. "
+          f"annual_value_eur = value in year one.'")
+rec = vs[vs.value_type.str.startswith("recurring")].annual_value_eur.sum()
+print(vs.to_string(index=False)); print(f"YEAR-ONE TOTAL EUR {vs.annual_value_eur.sum():,.0f} | recurring EUR {rec:,.0f}/yr")
 
 # COMMAND ----------
 

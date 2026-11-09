@@ -56,3 +56,13 @@ def test_features_on_generated_data_separate_classes(gen):
     f, y = gen
     assert f.loc[y == 1, "vib_slope_14"].mean() > f.loc[y == 0, "vib_slope_14"].mean()
     assert f.loc[y == 1, "vib_ratio_7_60"].mean() > 1.1 * f.loc[y == 0, "vib_ratio_7_60"].mean()
+
+
+def test_time_split_embargo_prevents_label_leakage():
+    from helivara.features import time_split
+    d = pd.Series(pd.date_range("2026-01-01", "2026-09-22"))
+    tr, te = time_split(d, test_start="2026-06-01", test_end="2026-08-22", horizon_days=30)
+    # a training row's label window (date, date+30] must end before the test window starts
+    assert (d[tr] + pd.Timedelta(days=30)).max() < pd.Timestamp("2026-06-01")
+    assert d[te].min() == pd.Timestamp("2026-06-01") and d[te].max() == pd.Timestamp("2026-08-22")
+    assert not (tr & te).any()

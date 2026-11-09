@@ -1,12 +1,12 @@
-# app smoke test 2026-11-09T19:23:42Z against https://helivara-control-tower-7474648220918581.aws.databricksapps.com
+# app smoke test 2026-11-09T20:11:50Z against https://helivara-control-tower-7474648220918581.aws.databricksapps.com
 PASS  UI served  200
-PASS  launch board (Lakebase) contains Zyvanta at risk  {"brand": "Zyvanta", "readiness": 0.3333333333333333, "blocking_gates": "master data, artwork", "revenue_at_risk_eur": 7850126.582278481, "linked_equipment": "L_OSD_001_EQ_01", "linked_failure_prob": 0.9377289377289376}
-PASS  equipment risk top-1 is the Valmora coater  L_OSD_001_EQ_01 p=0.94
-PASS  escalate twice -> one open action (201 then 200, same id)  201/200 id=9
+PASS  launch board (Lakebase) contains Zyvanta at risk  {"brand": "Zyvanta", "readiness": 0.3333333333333333, "blocking_gates": "master data, artwork", "revenue_at_risk_eur": 7850126.582278481, "linked_equipment": "L_OSD_001_EQ_01", "linked_failure_prob": 0.8967450476053154}
+PASS  equipment risk top-1 is the Valmora coater  L_OSD_001_EQ_01 p=0.90
+PASS  escalate twice -> one open action (201 then 200, same id)  201/200 id=11
 PASS  action note UTF-8 round trip + created_by is the signed-in user  created_by=federico.rizzo@databricks.com
 PASS  invalid action rejected with 422  422
-PASS  genie[demand] 'Perché Zyvanta è a rischio?'  25s status=ok sql=yes :: 'Stai chiedendo perché il brand Zyvanta è considerato a rischio nel contesto dei lanci di prodotto.\n\nZyvanta è **a rischio** perché il lancio **ZYV-001** ha un l'
-PASS  genie[demand] 'Cosa rende un lancio pronto?'  5s status=ok sql=no :: 'Un lancio è “pronto” quando master data, artwork e serializzazione sono pronti: questo si riflette nel `launch_readiness_score` e, in aggregato, in `MEASURE(\\`a'
-PASS  genie[manufacturing] 'Which machines are most likely to fail in the next 30 days?'  18s status=ok sql=yes :: 'You want to see the list of machines that are most likely to fail within the next 30 days, showing the highest risk score for each machine along with the predic'
+PASS  genie[demand] 'Perché Zyvanta è a rischio?'  21s status=ok sql=yes :: 'Stai chiedendo perché il brand Zyvanta è considerato a rischio nel contesto dei lanci di prodotto.\n\n**Zyvanta** è a rischio perché per il launch ID **ZYV-001** '
+PASS  genie[demand] 'Cosa rende un lancio pronto?'  12s status=ok sql=yes :: "Vuoi vedere la prontezza media dei lanci, inclusi i tassi di prontezza per i dati master, l'artwork e la serializzazione, oltre al numero totale di lanci.\n\nNel "
+PASS  genie[manufacturing] 'Which machines are most likely to fail in the next 30 days?'  18s status=ok sql=yes :: 'You want to see the list of machines that have the highest risk of failing within the next 30 days, showing the most critical predicted failure for each machine'
 
 9/9 checks passed

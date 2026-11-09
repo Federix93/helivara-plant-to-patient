@@ -14,7 +14,7 @@ ERP, MES and maintenance reports for days.
 **What this build delivers.** In one governed app, the Global Demand & S&OP Manager:
 1. sees **Zyvanta at 33% readiness with €7.9M revenue at risk** (estimate);
 2. asks Genie in Italian *"Perché Zyvanta è a rischio?"* and gets **master data + artwork**, answered from certified metrics;
-3. sees that the predictive model gives the Valmora coater a **94% chance of failing within 30 days**, a second, hidden risk;
+3. sees that the predictive model gives the Valmora coater a **90% chance of failing within 30 days**, a second, hidden risk;
 4. clicks **Escalate**, which creates three owned, dated actions (master data, artwork, preventive maintenance), stored in Lakebase
    and copied back to the lakehouse so Genie and the dashboard can see what was decided.
 
@@ -25,13 +25,13 @@ From days of report chasing to **about 60 seconds from signal to tracked decisio
 Produced by notebook `src/notebooks/03_value_and_brief.py` from gold tables × the editable `value_assumptions` table
 (full table and sources: [`evidence/value/value_summary.md`](evidence/value/value_summary.md)).
 
-| Lever | Annual value | How it's computed | Who cares |
+| Lever | Value (year one) | How it's computed | Who cares |
 |---|---:|---|---|
-| **Launch protection (Zyvanta)** | **€7.85M** | 4,361 packs/week (Q4 consensus forecast) × €450 net/pack × 4 weeks of delay avoided | Executive sponsor (COO / Head of Global Supply Chain) |
-| Unplanned downtime avoided | €0.73M | 457 unplanned h/yr × €8,000/h × 20% reduction | Plant and reliability leaders |
-| OTIF improvement | €1.00M | 5 OTIF points × €200k/point (penalties, lost sales) | Commercial / supply chain |
-| Expiry write-off avoided | €0.11M | 35,626 units at risk/yr × €12 × 25% | Finance |
-| **Total** | **≈ €9.7M / year** | Run cost: serverless, pay-per-use (pipeline + jobs + Lakebase CU + app) | |
+| **Launch protection (Zyvanta)**, one-time per protected launch | **€7.85M** | 4,361 packs/week (Q4 consensus forecast) × €450 net/pack × 4 weeks of patent-protected sales not lost | Executive sponsor (COO / Head of Global Supply Chain) |
+| Unplanned downtime avoided, recurring | €0.73M / yr | 457 unplanned h/yr × €8,000/h × 20% reduction | Plant and reliability leaders |
+| OTIF improvement, recurring | €1.00M / yr | 5 OTIF points × €200k/point (penalties, lost sales) | Commercial / supply chain |
+| Expiry write-off avoided, recurring | €0.11M / yr | 35,626 units at risk/yr × €12 × 25% | Finance |
+| **Year-one total** | **≈ €9.7M** | of which **€1.84M recurs every year**, plus €7.85M for each launch protected (Helivara launches 2–3 a year) | |
 
 **Domain owner value (Global Demand & S&OP Manager):** launch-gate status every day instead of once a month, one certified
 definition of readiness and accuracy shared with finance, and self-service answers in Italian with the SQL visible.
@@ -49,7 +49,7 @@ flowchart LR
   end
   S -->|publish task, INSERT OVERWRITE| G[(Governed gold: 21 tables, certified, in 4 Discover domains)]
   G --> MV[8 metric views · mv_*]
-  G -->|telemetry + maintenance| ML[equipment_failure_model@champion · AUC 0.82]
+  G -->|telemetry + maintenance| ML[equipment_failure_model@champion · AUC 0.81]
   ML --> PF[fact_predicted_failure · equipment_risk_drivers]
   G --> VAL[value_assumptions → launch_value · value_summary]
   PF & VAL --> AI[ai_query brief EN/IT · launch_action_brief]
@@ -65,7 +65,7 @@ flowchart LR
 |---|---|---|---|
 | **Lakeflow** | Serverless declarative pipeline: Auto Loader bronze → silver with 10 expectations → quarantine; daily Lakeflow Job with 6 tasks | `src/pipeline/`, `src/sql/publish_gold.sql`, `resources/` | [`evidence/pipeline/run_2026-11-09.md`](evidence/pipeline/run_2026-11-09.md), [`verify.txt`](evidence/pipeline/verify.txt) (53/53), [`jobs/helivara_daily/run_summary.md`](evidence/jobs/helivara_daily/run_summary.md) |
 | **Unity Catalog** | Bilingual comments on every gold table, 8 metric views, certification + a deprecated decoy, 4 domains / 8 subdomains, UC-registered model, lineage from the raw Volume files through bronze/silver to gold and the scored tables | `setup/` | [`evidence/contracts/`](evidence/contracts/) (schema contract, name scan 0 hits) |
-| **ML / GenAI** | Calibrated gradient-boosting failure model (MLflow, UC registry, `@champion` only if AUC ≥ 0.75); `ai_query` brief; Genie knowledge PDF | `src/helivara/features.py`, `src/notebooks/` | [`evidence/ml/model_card.md`](evidence/ml/model_card.md), [`metrics.json`](evidence/ml/metrics.json), [`train_run_output.txt`](evidence/ml/train_run_output.txt), [`evidence/value/launch_action_brief.md`](evidence/value/launch_action_brief.md) |
+| **ML / GenAI** | Calibrated gradient-boosting failure model (MLflow, UC registry, out-of-time test with a 30-day embargo, `@champion` only if AUC ≥ 0.75); `ai_query` brief; Genie knowledge PDF | `src/helivara/features.py`, `src/notebooks/` | [`evidence/ml/model_card.md`](evidence/ml/model_card.md), [`metrics.json`](evidence/ml/metrics.json), [`train_run_output.txt`](evidence/ml/train_run_output.txt), [`evidence/value/launch_action_brief.md`](evidence/value/launch_action_brief.md) |
 | **Lakebase** | Autoscaling Postgres project `helivara`: serving tables (idempotent upsert) + `actions` (app-owned, one open action per launch × type) | `src/helivara/lakebase_sync.py`, `setup/lakebase_init.sql` | [`evidence/lakebase/verify.txt`](evidence/lakebase/verify.txt), [`synced_table_attempt.txt`](evidence/lakebase/synced_table_attempt.txt) |
 | **Genie Agent** | Demand & Supply and Manufacturing & Reliability agents on metric views + ML/value/action tables; embedded in the app | `setup/patch_genie.py` | [`evidence/genie/transcripts.md`](evidence/genie/transcripts.md) (15 Q&A with SQL) |
 | **Databricks App** | FastAPI + React Control Tower: Lakebase board, model risk, Genie (on behalf of the signed-in user), Escalate write-back | `app/` | [`evidence/app/smoke_2026-11-09.log`](evidence/app/smoke_2026-11-09.log) (9/9 against the deployed app) |
@@ -92,7 +92,8 @@ verification scripts after each stage. Prompts, patterns and what was checked by
 
 ```bash
 uv sync                                   # Python 3.12 env (pandas, scikit-learn, pg8000, fastapi…)
-uv run pytest                             # 55 unit tests (generator, features, value, sync, app API)
+uv run pytest                             # 57 unit tests (generator, features, value, sync, app API)
+(cd app/frontend && npm ci && npm run build)   # build the React UI into app/frontend/dist (deployed with the app)
 uv run python setup/upload_raw.py         # generate synthetic sources → UC Volume raw/
 databricks bundle deploy                  # pipeline, 3 jobs, app (profile in databricks.yml)
 databricks bundle run helivara_train      # train + register + score the model

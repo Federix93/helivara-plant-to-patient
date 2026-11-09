@@ -1,75 +1,76 @@
-# Job run 355492011283109 · task train · state SUCCESS
-# notebook: ab9473b2-47be-4ac7-8d03-3835fb836da9
+# Job run 880999158586378 · task train · state SUCCESS
+# notebook: ac0b1b44-b9cf-4610-932f-54ece45acc6f
 
 --- cell 3 output ---
     self._make_module_from_path(filepath)
-2026/11/09 18:34:59 INFO mlflow.tracking.fluent: Experiment with name '/Users/federico.rizzo@databricks.com/helivara_equipment_failure' does not exist. Creating a new experiment.
-[1;38;5;208mIf you are using MLflow Tracing, consider storing your traces in Unity Catalog for unlimited storage (no 100,000 trace limit), fine-grained access controls, and queryability from notebooks, SQL, and dashboards. [94mLearn more: https://docs.databricks.com/aws/en/mlflow3/genai/tracing/trace-unity-catalog[0m
+[1;38;5;208mIf you are using MLflow Tracing, you can migrate your traces to Unity Catalog for unlimited storage, fine-grained access controls, and queryability from notebooks, SQL, and dashboards. [94mLearn more: https://docs.databricks.com/aws/en/mlflow3/genai/tracing/migrate-traces-to-uc[0m
 {"text/plain": ""}
 
 --- cell 4 output ---
-rows=7740 train=5460 test=1660 positive_rate=0.307
+rows=7740 train=4860 test=1660 positive_rate=0.307
 
 --- cell 5 output ---
-🔗 View Logged Model at: https://fevm-fr-stable.cloud.databricks.com/ml/experiments/452501428929115/models/m-f8eb57a4a2b1498a8ba3549c4c24a78a?o=7474648220918581
-Successfully registered model 'fr_stable_catalog.supply_chain.equipment_failure_model'.
-🔗 Created version '1' of model 'fr_stable_catalog.supply_chain.equipment_failure_model': https://fevm-fr-stable.cloud.databricks.com/explore/data/models/fr_stable_catalog/supply_chain/equipment_failure_model/version/1?o=7474648220918581
+🔗 View Logged Model at: https://fevm-fr-stable.cloud.databricks.com/ml/experiments/452501428929115/models/m-6ae9b3084c044185ae75705397636e7c?o=7474648220918581
+Registered model 'fr_stable_catalog.supply_chain.equipment_failure_model' already exists. Creating a new version of this model...
+🔗 Created version '3' of model 'fr_stable_catalog.supply_chain.equipment_failure_model': https://fevm-fr-stable.cloud.databricks.com/explore/data/models/fr_stable_catalog/supply_chain/equipment_failure_model/version/3?o=7474648220918581
 {
- "test_auc": 0.8156675058056709,
- "test_brier": 0.1345944236676527,
+ "test_auc": 0.8151763818147519,
+ "test_brier": 0.1404904344766311,
  "test_positive_rate": 0.336144578313253,
  "test_precision_at_5pct": 1.0,
  "tn": 1098,
  "fp": 4,
- "fn": 286,
- "tp": 272
+ "fn": 274,
+ "tp": 284
 }
 {
- "vib_ratio_7_60": 0.0426,
- "days_since_maint": 0.0277,
- "temp_mean_7": 0.0229,
- "vib_slope_14": 0.0183,
- "vib_mean_7": 0.011,
- "temp_ratio_7_60": 0.0083,
- "cur_ratio_7_60": 0.008,
- "cur_slope_14": 0.0027,
- "temp_slope_14": 0.0006,
- "cur_mean_7": -0.0059,
- "anomaly_max_7": -0.011
+ "vib_ratio_7_60": 0.0332,
+ "days_since_maint": 0.0203,
+ "temp_mean_7": 0.018,
+ "temp_ratio_7_60": 0.0175,
+ "vib_slope_14": 0.0167,
+ "vib_mean_7": 0.0141,
+ "cur_ratio_7_60": 0.0021,
+ "cur_slope_14": -0.0006,
+ "temp_slope_14": -0.0012,
+ "anomaly_max_7": -0.0024,
+ "cur_mean_7": -0.0029
 }
-registered fr_stable_catalog.supply_chain.equipment_failure_model v 1
+registered fr_stable_catalog.supply_chain.equipment_failure_model v 3
 
 --- cell 6 output ---
 {
  "model": "fr_stable_catalog.supply_chain.equipment_failure_model",
- "version": 1,
- "run_id": "6e3de2129c334c839f57ab47e04f926f",
+ "version": 3,
+ "run_id": "7ea5a0390e244ef981409a7580fe781f",
  "champion": true,
  "metrics": {
-  "test_auc": 0.8156675058056709,
-  "test_brier": 0.1345944236676527,
+  "test_auc": 0.8151763818147519,
+  "test_brier": 0.1404904344766311,
   "test_positive_rate": 0.336144578313253,
   "test_precision_at_5pct": 1.0,
   "tn": 1098,
   "fp": 4,
-  "fn": 286,
-  "tp": 272
+  "fn": 274,
+  "tp": 284
  },
  "permutation_importance": {
-  "vib_ratio_7_60": 0.0426,
-  "days_since_maint": 0.0277,
-  "temp_mean_7": 0.0229,
-  "vib_slope_14": 0.0183,
-  "vib_mean_7": 0.011,
-  "temp_ratio_7_60": 0.0083,
-  "cur_ratio_7_60": 0.008,
-  "cur_slope_14": 0.0027,
-  "temp_slope_14": 0.0006,
-  "cur_mean_7": -0.0059,
-  "anomaly_max_7": -0.011
+  "vib_ratio_7_60": 0.0332,
+  "days_since_maint": 0.0203,
+  "temp_mean_7": 0.018,
+  "temp_ratio_7_60": 0.0175,
+  "vib_slope_14": 0.0167,
+  "vib_mean_7": 0.0141,
+  "cur_ratio_7_60": 0.0021,
+  "cur_slope_14": -0.0006,
+  "temp_slope_14": -0.0012,
+  "anomaly_max_7": -0.0024,
+  "cur_mean_7": -0.0029
  },
  "split": {
-  "train_end": "2026-06-01",
+  "train_label_window_ends_before": "2026-06-01",
+  "train_dates_before": "2026-05-02",
+  "embargo_days": 30,
   "test": [
    "2026-06-01",
    "2026-08-22"

@@ -53,3 +53,11 @@ def test_sync_rows_deletes_rows_no_longer_in_source():
 def test_serving_specs_have_primary_keys():
     assert BOARD["pk"] == "launch_id" and BOARD["pk"] in BOARD["columns"]
     assert EQUIPMENT["pk"] == "equipment" and "failure_prob_30d" in EQUIPMENT["columns"]
+
+
+def test_prune_with_empty_source_refuses_to_wipe():
+    import pytest
+    conn = FakeConn()
+    with pytest.raises(ValueError, match="empty"):
+        sync_rows(conn, "t", ["a", "b"], "a", [], prune=True)
+    assert conn.log == [] and conn.commits == 0

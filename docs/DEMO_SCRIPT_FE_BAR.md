@@ -11,7 +11,7 @@ one question to warm it up (the first answer can take 20–30 s).
 > launch, **Zyvanta**, is at risk. The data exists. The problem is that nobody sees the blockers until the monthly S&OP review,
 > and every week of delay costs about **€2 million** in revenue. Today I'll show you how your Global Demand & S&OP Manager finds
 > that risk in seconds, understands why, discovers a manufacturing risk nobody had connected to it, and acts, all on one
-> governed platform. Then we'll put a number on it: about **€9.7 million a year**."
+> governed platform. Then we'll put a number on it: about **€9.7 million in year one**, and €1.8 million of it recurs every year."
 
 (Slide 3, executive summary: say the outcome and the ask in one breath. Slide 4: the three gates; two of them are open.)
 
@@ -29,7 +29,7 @@ one question to warm it up (the first answer can take 20–30 s).
    > queries the certified metric views, the same definition finance and the dashboards use, so there's no second version
    > of the truth."
 3. **The hidden risk:** the red box on the card.
-   > "Here's what nobody had connected: the coater on line L_OSD_001 at **Valmora**, the line that coats Zyvanta, has a **94%
+   > "Here's what nobody had connected: the coater on line L_OSD_001 at **Valmora**, the line that coats Zyvanta, has a **90%
    > probability of an unplanned failure in the next 30 days**. That comes from a predictive-maintenance model trained on the
    > machine's telemetry. So even if we fix the paperwork, supply is at risk."
    (Optional: open the *AI action brief*, switch to IT. "Generated from governed facts only. It's advice, not a decision.")
@@ -40,7 +40,7 @@ one question to warm it up (the first answer can take 20–30 s).
 5. **For the architect (90 s):** switch to the workspace.
    - The Lakeflow pipeline graph: bronze → silver with **10 data-quality rules**; **518 bad rows quarantined** that never reached gold.
    - Unity Catalog lineage: raw Volume files → bronze → silver → certified gold → metric views, plus the model
-     `equipment_failure_model@champion` with its AUC of 0.82.
+     `equipment_failure_model@champion` with an out-of-time AUC of 0.81.
    - The daily Lakeflow Job: ingest → publish → score → value + brief → Lakebase → copy-back, all serverless.
    > "One copy of the data, governed once, and every stage feeds the next. Genie and the app run with each user's
    > permissions."
@@ -50,7 +50,7 @@ one question to warm it up (the first answer can take 20–30 s).
 ## 3 · Tell (45 s) · slides 9 and 12
 > "So what does this mean for Helivara? The blockers become visible about **four weeks earlier**, which protects roughly
 > **€7.85 million on this launch alone**. Add OTIF, unplanned downtime and expiry write-offs and it comes to about
-> **€9.7 million a year**. Every assumption is in a table your team can challenge. What I'd propose is a **six-week pilot on
+> **€9.7 million in year one**, with €1.8 million recurring every year and the launch protection repeating for every launch we protect. Every assumption is in a table your team can challenge. What I'd propose is a **six-week pilot on
 > your next two launches**: success means every blocker is flagged at least four weeks before S&OP. Can we agree on a sponsor
 > and the two launches this week?"
 

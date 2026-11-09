@@ -1,33 +1,35 @@
 {
  "model": "fr_stable_catalog.supply_chain.equipment_failure_model",
- "version": 1,
- "run_id": "6e3de2129c334c839f57ab47e04f926f",
+ "version": 3,
+ "run_id": "7ea5a0390e244ef981409a7580fe781f",
  "champion": true,
  "metrics": {
-  "test_auc": 0.8156675058056709,
-  "test_brier": 0.1345944236676527,
+  "test_auc": 0.8151763818147519,
+  "test_brier": 0.1404904344766311,
   "test_positive_rate": 0.336144578313253,
   "test_precision_at_5pct": 1.0,
   "tn": 1098,
   "fp": 4,
-  "fn": 286,
-  "tp": 272
+  "fn": 274,
+  "tp": 284
  },
  "permutation_importance": {
-  "vib_ratio_7_60": 0.0426,
-  "days_since_maint": 0.0277,
-  "temp_mean_7": 0.0229,
-  "vib_slope_14": 0.0183,
-  "vib_mean_7": 0.011,
-  "temp_ratio_7_60": 0.0083,
-  "cur_ratio_7_60": 0.008,
-  "cur_slope_14": 0.0027,
-  "temp_slope_14": 0.0006,
-  "cur_mean_7": -0.0059,
-  "anomaly_max_7": -0.011
+  "vib_ratio_7_60": 0.0332,
+  "days_since_maint": 0.0203,
+  "temp_mean_7": 0.018,
+  "temp_ratio_7_60": 0.0175,
+  "vib_slope_14": 0.0167,
+  "vib_mean_7": 0.0141,
+  "cur_ratio_7_60": 0.0021,
+  "cur_slope_14": -0.0006,
+  "temp_slope_14": -0.0012,
+  "anomaly_max_7": -0.0024,
+  "cur_mean_7": -0.0029
  },
  "split": {
-  "train_end": "2026-06-01",
+  "train_label_window_ends_before": "2026-06-01",
+  "train_dates_before": "2026-05-02",
+  "embargo_days": 30,
   "test": [
    "2026-06-01",
    "2026-08-22"

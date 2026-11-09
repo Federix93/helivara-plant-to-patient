@@ -1,5 +1,5 @@
-# Job run 1050657841436583 · task value_and_brief · state SUCCESS
-# notebook: 8fc2040b-9c27-4ff9-8620-f6fde37add3f
+# Job run 880999158586378 · task value_and_brief · state SUCCESS
+# notebook: 6b29da27-fe93-4eaf-b4dd-cdd26d34b204
 
 --- cell 3 output ---
 zyvanta_net_price_eur450.0EUR/packAssumed net price of a 14-tablet specialty immunology pack (~EUR 30/day of therapy); edit to the real net priceweeks_delay_avoided4.0weeksBlockers surface ~4 weeks earlier with daily readiness monitoring vs the monthly S&OP reviewdowntime_cost_per_hour_eur8000.0EUR/hourLost contribution + recovery cost per hour of unplanned downtime on an OSD line (industry rule of thumb)downtime_reduction0.2fractionTypical reduction in unplanned downtime from predictive maintenance programs (20-30%)unit_cost_eur12.0EUR/unitAssumed standard cost of a finished packexpiry_reduction0.25fractionReduction in expiry write-offs from earlier visibility (matches the 25% holding-cost benchmark)otif_value_per_point_eur200000.0EUR/OTIF point/yearAvoided tender penalties and lost sales per OTIF percentage pointotif_points5.0pointsExpected OTIF improvement (7-10% benchmark, conservative)
@@ -9,21 +9,21 @@ launch_id   brand  weekly_units  revenue_at_risk_eur
   ZYV-001 Zyvanta   4361.181435         7.850127e+06
 
 --- cell 5 output ---
-                      lever  annual_value_eur                                        formula
-Launch protection (Zyvanta)      7.850127e+06 weekly units 4,361 x EUR 450 x 4 weeks earlier
- Unplanned downtime avoided      7.306133e+05         457 unplanned h/yr x EUR 8,000/h x 20%
-   Expiry write-off avoided      1.068780e+05         35,626 units at risk/yr x EUR 12 x 25%
-           OTIF improvement      1.000000e+06                         5 pts x EUR 200,000/pt
-TOTAL EUR 9,687,618
+                      lever                     value_type  annual_value_eur                                        formula
+Launch protection (Zyvanta) one-time, per protected launch      7.850127e+06 weekly units 4,361 x EUR 450 x 4 weeks earlier
+ Unplanned downtime avoided            recurring, per year      7.306133e+05         457 unplanned h/yr x EUR 8,000/h x 20%
+   Expiry write-off avoided            recurring, per year      1.068780e+05         35,626 units at risk/yr x EUR 12 x 25%
+           OTIF improvement            recurring, per year      1.000000e+06                         5 pts x EUR 200,000/pt
+YEAR-ONE TOTAL EUR 9,687,618 | recurring EUR 1,837,491/yr
 
 --- cell 6 output ---
 ZYV-001 
-FACTS: Launch ZYV-001 (Zyvanta): readiness 0.33; master data ready 0.0; artwork ready 0.0; serialization ready 1.0; estimated revenue at risk EUR 7,850,127; primary line L_OSD_001 at Valmora (coating); highest failure risk on that line: L_OSD_001_EQ_01 with 94.0% probability of unplanned failure within 30 days. 
+FACTS: Launch ZYV-001 (Zyvanta): readiness 0.33; master data ready 0.0; artwork ready 0.0; serialization ready 1.0; estimated revenue at risk EUR 7,850,127; primary line L_OSD_001 at Valmora (coating); highest failure risk on that line: L_OSD_001_EQ_01 with 90.0% probability of unplanned failure within 30 days. 
 EN: **Status:** Launch ZYV-001 (Zyvanta) is at 0.33 readiness, with an estimated EUR 7,850,127 in revenue at risk.
-**Blockers:** Two gates are at 0: master data ready (0.0) and artwork ready (0.0). Only serialization is complete (1.0).
-**Manufacturing risk:** The primary line, L_OSD_001 at Valmora (coating), has equipment L_OSD_001_EQ_01 with a 94.0% probability of unplanned failure within 30 days, which threatens supply even if the gates clear.
-**Next actions:** (1) The Regulatory/Packaging Artwork Lead and the Master Data Manager should jointly set dates to close the artwork and master data gates, and report progress weekly. (2) The Valmora Maintenance Manager should schedule preventive maintenance or inspection of L_OSD_001_EQ_01 right away, and the Supply Chain Planner should assess a contingency such as a backup line or buffer stock. 
-IT: **Stato:** Il lancio ZYV-001 (Zyvanta) ha una readiness di 0,33, con EUR 7.850.127 di ricavi a rischio. Solo la serializzazione è pronta (1,0).
-**Blocchi:** Due gate sono a 0: master data (0,0) e artwork (0,0), e finché non sono sbloccati il lancio non può procedere.
-**Rischio produttivo:** La linea primaria L_OSD_001 a Valmora (rivestimento) ha l'apparecchiatura L_OSD_001_EQ_01 con il 94,0% di probabilità di guasto non pianificato entro 30 giorni, il che minaccia la continuità di fornitura.
-**Azioni successive:** (1) Il Responsabile Master Data e il Responsabile Regulatory/Artwork devono definire un piano con date per completare i dati anagrafici e l'artwork. (2) Il Responsabile Manutenzione dello stabilimento di Valmora, insieme al Responsabile Produzione, deve pianificare subito un intervento preventivo su L_OSD_001_EQ_01 e verificare i ricambi critici.
+**Blockers:** Two gates are at 0: master data (0.0) and artwork (0.0). Serialization is complete (1.0).
+**Manufacturing risk:** Equipment L_OSD_001_EQ_01 on primary line L_OSD_001 (coating, Valmora) has a 90.0% probability of unplanned failure within 30 days, which could disrupt supply even if the gates are cleared.
+**Next actions:** (1) The Master Data Lead should close the master data gap and, together with the Regulatory/Packaging Artwork Owner, finalize and release the artwork, so both gates move above 0. (2) The Valmora Maintenance/Site Operations Manager should schedule preventive maintenance or inspection on L_OSD_001_EQ_01 before the failure window and confirm a contingency plan for the coating line. 
+IT: **Stato:** Il lancio ZYV-001 (Zyvanta) ha una prontezza di appena 0,33, con un ricavo stimato a rischio di 7.850.127 EUR.
+**Blocchi:** Due gate sono a 0: i dati anagrafici (master data, 0,0) e l'artwork (0,0), mentre la serializzazione è completa (1,0).
+**Rischio produttivo:** La linea primaria L_OSD_001 a Valmora (rivestimento) presenta l'apparecchiatura L_OSD_001_EQ_01 con una probabilità del 90,0% di guasto non pianificato entro 30 giorni.
+**Azioni successive:** (1) Il Responsabile Master Data e il Responsabile Affari Regolatori devono completare e validare i dati anagrafici e approvare l'artwork definitivo, fissando una data di chiusura per entrambi i gate. (2) Il Responsabile Manutenzione dello stabilimento di Valmora, insieme al Responsabile Produzione, deve pianificare subito un intervento preventivo su L_OSD_001_EQ_01 e definire un piano di contingenza per proteggere la fornitura.
